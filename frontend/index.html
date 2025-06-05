@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Calculatorify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            jet: ['"JetBrains Mono"', 'monospace'],
+            inter: ['"Inter"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body class="bg-white font-inter">
+  <nav class="w-full border-b border-borderdefault">
+    <div class="container mx-auto flex items-center justify-between p-4">
+      <div class="text-2xl font-jet">CALCULAT%RIFY</div>
+      <div class="hidden md:flex space-x-6 text-lg">
+        <a href="#" class="text-textdefault">About</a>
+        <a href="index.html" class="text-textdefault">Home</a>
+        <a href="#" class="text-textdefault">Discover</a>
+        <a href="#" class="text-textdefault">Log out</a>
+      </div>
+      <button id="navToggle" class="md:hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-textdefault" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+    <div id="navMenu" class="md:hidden hidden pb-4">
+      <div class="flex flex-col space-y-2 px-4">
+        <a href="#" class="text-textdefault">About</a>
+        <a href="index.html" class="text-textdefault">Home</a>
+        <a href="#" class="text-textdefault">Discover</a>
+        <a href="#" class="text-textdefault">Log out</a>
+      </div>
+    </div>
+  </nav>
+  <main class="flex justify-center items-center h-[calc(100vh-64px)] p-4">
+    <div class="w-full max-w-md bg-white p-6 border border-borderdefault rounded-lg space-y-6">
+      <div>
+        <label for="email" class="block text-sm font-medium text-textdefault">Email</label>
+        <input id="email" type="email" placeholder="example@gmail.com" class="mt-1 w-full border border-borderdefault rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brand"/>
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-textdefault">Password</label>
+        <input id="password" type="password" placeholder="password" class="mt-1 w-full border border-borderdefault rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brand"/>
+      </div>
+      <button id="signIn" class="w-full bg-brand text-white py-3 rounded-md">Sign In</button>
+      <button id="googleSignIn" class="w-full border border-borderdefault py-3 rounded-md flex items-center justify-center space-x-2">
+        <span class="w-6 h-6 bg-red-500 rounded"></span>
+        <span class="text-textdefault text-lg">Sign in with Google</span>
+      </button>
+      <div class="flex items-center justify-between text-sm text-textdefault">
+        <div>
+          <input id="remember" type="checkbox" class="mr-2" />
+          <label for="remember">Remember for 30 days</label>
+        </div>
+        <div class="space-x-4">
+          <a href="#" class="underline">Sign up</a>
+          <a href="#" class="underline">Forgot password?</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
