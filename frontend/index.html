@@ -4,19 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - Calculatorify</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            jet: ['"JetBrains Mono"', 'monospace'],
-            inter: ['"Inter"', 'sans-serif']
-          }
-        }
-      }
-    }
-  </script>
+  <link href="dist/styles.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body class="bg-white font-inter">
@@ -71,6 +59,6 @@
       </div>
     </div>
   </main>
-  <script src="script.js"></script>
+  <script type="module" src="dist/script.js"></script>
 </body>
 </html>
