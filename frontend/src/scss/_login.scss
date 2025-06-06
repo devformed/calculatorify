@@ -85,7 +85,7 @@
 
     & .login-form__label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: .75rem;
     }
 
     & .login-form__input {
@@ -121,7 +121,7 @@
     justify-content: center;
     gap: 0.5rem;
     background: $white;
-    color: $color-text-secondary;
+    color: $color-text;
     border: 1px solid $color-border;
     font-size: 1rem;
     cursor: pointer;
@@ -132,8 +132,10 @@
 
   // Normalize inner logo size so both buttons match height
   &__google-button img {
-    height: 1em;
+    height: 1rem;
     width: auto;
+    transform: scale(1.5);
+    transform-origin: center;
   }
 
   &__options {
@@ -155,19 +157,15 @@
     cursor: pointer;
   }
   &__checkbox-input {
+    appearance: none;
+    -webkit-appearance: none;
     width: 1.5rem;
     height: 1.5rem;
-    border-radius: 12px;
     border: 1px solid $color-border;
-    accent-color: $color-text-secondary;
+    border-radius: 6px;
+    position: relative;
     cursor: pointer;
-  }
-  // Forgot-password link under Sign In, right-aligned
-  &__forgot {
-    text-align: right;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-    a { @extend .link; }
+    margin-right: .5rem;
   }
 
   &__footer {
