@@ -1,12 +1,12 @@
 // Dashboard Page Styles
 @use 'variables' as *;
 @use 'layout' as *;
-@use 'login' as *;
 .dashboard-page {
   position: relative;
 }
 .dashboard-nav {
-  @extend .login-nav;
+  @extend .card;
+  border: none;
 }
 .dashboard-main {
   @extend .flex-center;

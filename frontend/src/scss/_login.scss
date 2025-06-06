@@ -1,79 +1,109 @@
 // Login Page Styles
 @use 'variables' as *;
 @use 'layout' as *;
+
+// Full-screen background container
 .login-page {
-  position: relative;
-  overflow: hidden;
-  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-image: url('../images/login_bg.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
-.login-bg-image {
-  position: absolute;
+
+// Wrapper for header and content
+.login-page__wrapper {
   width: 100%;
-  opacity: 0.2;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.login-nav {
-  @extend .card;
-  border: none;
-}
-.login-nav .nav-inner {
+
+// Header styles
+.login-header__inner {
   @extend .container;
   @extend .flex-space;
+  align-items: center;
   padding: 1rem 0;
 }
-.login-nav .nav-title {
+
+.login-header__logo {
   font-family: $font-mono;
   font-size: 1.5rem;
 }
-.login-nav .nav-links {
-  display: none;
-  @media (min-width: $breakpoint-md) {
-    display: flex;
-    gap: 1.5rem;
-  }
-}
-.login-nav .nav-toggle {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-}
-.login-nav .nav-menu {
-  display: none;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0.5rem 1rem;
-}
-.login-nav .nav-menu > a {
-  padding: 0.5rem 0;
-}
-.login-main {
+
+// Main content area
+.login-content {
   @extend .flex-center;
   flex: 1;
-  flex-direction: column;
   padding: 1rem;
 }
-.login-card {
+
+// Login form block
+.login-form {
   @extend .card;
-  position: relative;
-  z-index: 1;
-  max-width: 480px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  background: $white;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
   border-radius: $radius-sm;
-}
-.login-card .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.login-card .form-input {
-  padding: 0.75rem;
-  border: 1px solid $color-border;
-  border-radius: $radius-sm;
-  font-size: 1rem;
-}
-.login-card .form-footer {
-  @extend .flex-space;
-  font-size: 0.875rem;
+
+  &__title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  &__group {
+    margin-bottom: 1rem;
+
+    & .login-form__label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    & .login-form__input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid $color-border;
+      border-radius: $radius-sm;
+      font-size: 1rem;
+    }
+  }
+
+  &__button {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  &__google {
+    @extend .flex-center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  &__options {
+    @extend .flex-space;
+    margin-top: 1rem;
+
+    &-checkbox {
+      display: flex;
+      align-items: center;
+
+      &-input {
+        margin-right: 0.5rem;
+      }
+    }
+
+    &-links {
+      display: flex;
+      gap: 1rem;
+
+      a {
+        @extend .link;
+      }
+    }
+  }
 }
