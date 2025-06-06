@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings - Calculatorify</title>
+  <link href="dist/styles.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="settings-page">
+    <nav class="login-nav">
+      <div class="nav-inner">
+        <div class="nav-title">CALCULAT%RIFY</div>
+        <div class="nav-links">
+          <a href="#">About</a>
+          <a href="dashboard.html">Home</a>
+          <a href="#">Discover</a>
+          <a href="#">Log out</a>
+        </div>
+        <button id="navToggle" class="nav-toggle">☰</button>
+      </div>
+      <div id="navMenu" class="nav-menu hide">
+        <a href="#">About</a>
+        <a href="dashboard.html">Home</a>
+        <a href="#">Discover</a>
+        <a href="#">Log out</a>
+      </div>
+    </nav>
+    <main class="settings-main">
+      <aside class="sidebar">
+        <h2>History</h2>
+        <ul class="history-list">
+          <li>Today</li>
+          <li>Yesterday</li>
+          <li>Last week</li>
+        </ul>
+        <h2>Calculators</h2>
+        <ul class="calculators-list">
+          <li>Consumer Loan Calculator</li>
+          <li>Deposit (Savings) Calculator</li>
+          <li>Inflation Calculator</li>
+          <li>Currency Calculator</li>
+          <li>BMI Calculator</li>
+          <li>Daily Caloric Needs Calculator</li>
+          <li>Ideal Weight Calculator</li>
+          <li>Area Calculator for Square</li>
+          <li>Fuel Consumption Calculator</li>
+        </ul>
+      </aside>
+      <section class="profile-section">
+        <h1>Profile</h1>
+        <div class="profile-form">
+          <div>
+            <label>Name</label>
+            <input type="text" value="Bob White" />
+          </div>
+          <div>
+            <label>Email</label>
+            <input type="email" value="bob-wait@imaginary.com" />
+          </div>
+        </div>
+        <button id="goBack" class="go-back link">Go back</button>
+        <div class="danger-zone">
+          <h2>Danger zone</h2>
+          <button id="updatePassword" class="btn-danger">Update password</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="dist/script.js"></script>
+</body>
+</html>

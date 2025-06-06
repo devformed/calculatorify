@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Calculatorify</title>
+  <link href="dist/styles.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="dashboard-page">
+    <nav class="login-nav">
+      <div class="nav-inner">
+        <div class="nav-title">CALCULAT%RIFY</div>
+        <div class="nav-links">
+          <a href="#">About</a>
+          <a href="dashboard.html">Home</a>
+          <a href="#">Discover</a>
+          <a href="#">Log out</a>
+        </div>
+        <button id="navToggle" class="nav-toggle">☰</button>
+      </div>
+      <div id="navMenu" class="nav-menu hide">
+        <a href="#">About</a>
+        <a href="dashboard.html">Home</a>
+        <a href="#">Discover</a>
+        <a href="#">Log out</a>
+      </div>
+    </nav>
+    <main class="dashboard-main">
+      <h1 class="dashboard-title">What do you want to calculate?</h1>
+      <section class="dashboard-card">
+        <h2>Salary Growth Calculator</h2>
+        <p>Calculates your projected salary after a specified period, assuming a fixed percentage raise at regular intervals.</p>
+        <div class="range-group">
+          <label for="salarySlider">Starting Salary: <span id="salaryValue"></span></label>
+          <input type="range" id="salarySlider" min="0" max="100000" step="1000" />
+        </div>
+        <div class="range-group">
+          <label for="raiseSlider">Raise Percentage: <span id="raiseValue"></span></label>
+          <input type="range" id="raiseSlider" min="0" max="100" step="1" />
+        </div>
+        <button class="btn btn-primary">Calculate</button>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="dist/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link href="dist/styles.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="login-page">
+    <img src="images/login_bg.jpg" alt="Background" class="login-bg-image" />
+    <nav class="login-nav">
+      <div class="nav-inner">
+        <div class="nav-title">CALCULAT%RIFY</div>
+        <div class="nav-links">
+          <a href="#">About</a>
+          <a href="login.html">Home</a>
+          <a href="#">Discover</a>
+          <a href="#">Log out</a>
+        </div>
+        <button id="navToggle" class="nav-toggle">☰</button>
+      </div>
+      <div id="navMenu" class="nav-menu hide">
+        <a href="#">About</a>
+        <a href="login.html">Home</a>
+        <a href="#">Discover</a>
+        <a href="#">Log out</a>
+      </div>
+    </nav>
+    <main class="login-main">
+      <div class="login-card">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="example@gmail.com" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="password" class="form-input" />
+        </div>
+        <button id="signIn" class="btn btn-primary">Sign In</button>
+        <button id="googleSignIn" class="btn btn-secondary">
+          <img src="https://placehold.co/32x32" alt="Google" />
+          <span>Sign in with Google</span>
+        </button>
+        <div class="form-footer">
+          <div>
+            <input id="remember" type="checkbox" />
+            <label for="remember">Remember for 30 days</label>
+          </div>
+          <div>
+            <a href="#" class="link">Sign up</a>
+            <a href="#" class="link">Forgot password?</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="dist/script.js"></script>
+</body>
+</html>
