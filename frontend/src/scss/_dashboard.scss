@@ -11,6 +11,7 @@
   @extend .card;
   border: none;
   border-bottom: 1px solid $color-border;
+  border-radius: 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -67,7 +68,7 @@
 // Sidebar for history and account info
 .dashboard-sidebar {
   position: fixed;
-  top: 60px;
+  top: 4rem;
   bottom: 0;
   left: 0;
   width: 240px;
@@ -79,6 +80,7 @@
     display: none;
   }
   .history-header {
+    margin-top: 1rem;
     font-family: $font-mono;
     font-size: 1rem;
     padding: 0.5rem 1rem;
@@ -93,7 +95,7 @@
   font-size: 0.75rem;
   color: $color-text-secondary;
   text-transform: uppercase;
-  padding: 0.25rem 1rem;
+  padding: 0.25rem 1rem;;
 }
 .dashboard-sidebar .history-list {
   list-style: none;
@@ -120,10 +122,6 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-}
-.dashboard-nav {
-  @extend .card;
-  border: none;
 }
 .dashboard-main {
   @extend .flex-center;
