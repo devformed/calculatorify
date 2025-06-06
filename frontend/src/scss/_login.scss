@@ -107,7 +107,7 @@
     cursor: pointer;
     padding: 0.75rem 1rem;
     border-radius: $radius-sm;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -140,15 +140,6 @@
     @extend .flex-space;
     margin-bottom: 2rem;
 
-    &-checkbox {
-      display: flex;
-      align-items: center;
-
-      &-input {
-        margin-right: 0.5rem;
-      }
-    }
-
     &-links {
       display: flex;
       gap: 1rem;
@@ -156,6 +147,21 @@
     }
   }
 
+  // Remember-me checkbox
+  &__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  &__checkbox-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid $color-border;
+    accent-color: $color-text-secondary;
+    cursor: pointer;
+  }
   // Forgot-password link under Sign In, right-aligned
   &__forgot {
     text-align: right;
