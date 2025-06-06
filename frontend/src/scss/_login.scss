@@ -73,102 +73,127 @@
   max-width: 25rem;
   width: 100%;
   border-radius: $radius-sm;
+}
 
-  &__title {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 1.25rem;
-  }
+// Title above the form
+.login-form__title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
 
-  &__group {
-    margin-bottom: 1rem;
+// Form groups (label + input)
+.login-form__group {
+  margin-bottom: 1.25rem;
+}
+.login-form__group .login-form__label {
+  display: block;
+  margin-bottom: .75rem;
+}
+.login-form__group .login-form__input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-size: 1rem;
+}
 
-    & .login-form__label {
-      display: block;
-      margin-bottom: .75rem;
-    }
+// Primary submit button
+.login-form__submit {
+  width: 100%;
+  background: $black;
+  color: $white;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: $radius-sm;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    & .login-form__input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid $color-border;
-      border-radius: $radius-sm;
-      font-size: 1rem;
-    }
-  }
+// Google sign-in button
+.login-form__google-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: $white;
+  color: $color-text;
+  border: 1px solid $color-border;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: $radius-sm;
+  margin-bottom: 1rem;
+}
+.login-form__google-button img {
+  height: 1rem;
+  width: auto;
+  transform: scale(1.5);
+  transform-origin: center;
+}
 
-  // Primary sign in button
-  &__submit {
-    width: 100%;
-    background: $black;
-    color: $white;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.75rem 1rem;
-    border-radius: $radius-sm;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+// Options row (remember + sign-up link)
+.login-form__options {
+  @extend .flex-space;
+  margin-bottom: 2rem;
+}
+.login-form__options-links {
+  display: flex;
+  gap: 1rem;
+}
+.login-form__options-links a {
+  @extend .link;
+}
 
-  // Google sign-in button
-  &__google-button {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background: $white;
-    color: $color-text;
-    border: 1px solid $color-border;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.75rem 1rem;
-    border-radius: $radius-sm;
-    margin-bottom: 1rem;
-  }
+// Remember-me checkbox
+.login-form__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.login-form__checkbox-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid $color-border;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  margin-right: .25rem;
+}
+.login-form__checkbox-input:checked {
+  background-color: $color-text;
+}
+.login-form__checkbox-input:checked::after {
+  content: '';
+  position: absolute;
+  top: 0.25rem;
+  left: 0.55rem;
+  width: 0.25rem;
+  height: 0.5rem;
+  border: solid $white;
+  border-width: 0 0.2rem 0.2rem 0;
+  transform: rotate(45deg);
+}
 
-  // Normalize inner logo size so both buttons match height
-  &__google-button img {
-    height: 1rem;
-    width: auto;
-    transform: scale(1.5);
-    transform-origin: center;
-  }
+// Forgot-password link under Sign In, right-aligned
+.login-form__forgot {
+  text-align: right;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.login-form__forgot a {
+  @extend .link;
+}
 
-  &__options {
-    @extend .flex-space;
-    margin-bottom: 2rem;
-
-    &-links {
-      display: flex;
-      gap: 1rem;
-      a { @extend .link; }
-    }
-  }
-
-  // Remember-me checkbox
-  &__checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-  }
-  &__checkbox-input {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 1px solid $color-border;
-    border-radius: 6px;
-    position: relative;
-    cursor: pointer;
-    margin-right: .5rem;
-  }
-
-  &__footer {
-    margin-bottom: 2rem;
-  }
+// Footer under form
+.login-form__footer {
+  margin-bottom: 2rem;
 }
