@@ -1,67 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
-  <link href="dist/styles.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login</title>
+    <link href="dist/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="login-page">
+<div class="login-page">
     <div class="login-page__wrapper">
-      <header class="login-header">
-        <div class="container flex-space login-header__inner">
-          <h1 class="login-header__logo">CALCULAT@RIFY</h1>
-          <nav class="login-header__nav">
-            <ul class="login-header__list">
-              <li><a href="#">About</a></li>
-              <li><a href="login.html">Home</a></li>
-              <li><a href="#">Discover</a></li>
-              <li><a href="#">Log out</a></li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-      <main class="login-content flex-center">
-        <form class="login-form card" novalidate>
-          <h2 class="login-form__title">Sign In</h2>
-          <div class="login-form__group">
-            <label for="email" class="login-form__label">Email</label>
-            <input id="email" name="email" type="email"
-                   placeholder="example@gmail.com"
-                   class="login-form__input" required />
-          </div>
-          <div class="login-form__group">
-            <label for="password" class="login-form__label">Password</label>
-            <input id="password" name="password" type="password"
-                   placeholder="••••••••"
-                   class="login-form__input" required />
-          </div>
-          <button type="submit" class="btn btn--primary login-form__button">
-            Sign In
-          </button>
-          <button type="button" class="btn btn--secondary login-form__google">
-            <img src="https://placehold.co/32x32"
-                 alt="Google icon" class="login-form__google-icon" />
-            <span>Sign in with Google</span>
-          </button>
-          <div class="login-form__options flex-space">
-            <label class="login-form__checkbox">
-              <input id="remember" name="remember"
-                     type="checkbox"
-                     class="login-form__checkbox-input" />
-              Remember for 30 days
-            </label>
-            <div class="login-form__links">
-              <a href="#" class="login-form__link">Sign up</a>
-              <a href="#" class="login-form__link">Forgot password?</a>
+        <header class="login-header">
+            <div class="container flex-space login-header__inner">
+                <h1 class="login-header__logo">CALCULAT%RIFY</h1>
+                <nav class="login-header__nav">
+                    <ul class="login-header__list">
+                        <li><a href="#">About</a></li>
+                        <li><a href="login.html">Home</a></li>
+                        <li><a href="#">Discover</a></li>
+                        <li><a href="#">Log out</a></li>
+                    </ul>
+                </nav>
             </div>
-          </div>
-        </form>
-      </main>
+        </header>
+        <main class="login-content flex-center">
+            <form class="login-form card" novalidate>
+                <div class="login-form__group">
+                    <label for="email" class="login-form__label">Email</label>
+                    <input id="email" name="email" type="email"
+                           placeholder="example@gmail.com"
+                           class="login-form__input" required/>
+                </div>
+                <div class="login-form__group">
+                    <label for="password" class="login-form__label">Password</label>
+                    <input id="password" name="password" type="password"
+                           placeholder="••••••••"
+                           class="login-form__input" required/>
+                </div>
+                <div style="padding-bottom: 2rem"></div>
+                <div class="login-form__options flex-space">
+                    <label class="login-form__checkbox">
+                        <input id="remember" name="remember" type="checkbox" class="login-form__checkbox-input"/>
+                        Remember for 30 days
+                    </label>
+                    <div class="login-form__options-links">
+                        <a href="#" class="login-form__link">Sign up</a>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn--primary login-form__button">
+                    Sign In
+                </button>
+                <button type="button" class="btn btn--secondary login-form__google">
+                    <img src="images/logo_google.svg" alt="Google" height="32" width="32"/>
+                    <span>Sign in with Google</span>
+                </button>
+                <div class="login-form__forgot">
+                    <a href="#" class="login-form__link">Forgot password?</a>
+                </div>
+            </form>
+        </main>
     </div>
-  </div>
-  <script type="module" src="dist/script.js"></script>
+</div>
+<script type="module" src="dist/script.js"></script>
 </body>
 </html>
