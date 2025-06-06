@@ -1,0 +1,63 @@
+// Layout and Utility Classes
+@use 'variables' as *;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+.flex {
+  display: flex;
+}
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-space {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media (min-width: $breakpoint-md) {
+  .show-md {
+    display: block;
+  }
+  .hide-md {
+    display: none;
+  }
+}
+.hide {
+  display: none;
+}
+.link {
+  color: $color-text;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.btn {
+  cursor: pointer;
+  border-radius: $radius-sm;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+.btn-primary {
+  @extend .btn;
+  background-color: $color-brand;
+  color: $white;
+  border: none;
+}
+.btn-secondary {
+  @extend .btn;
+  background-color: $white;
+  color: $color-text;
+  border: 1px solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.card {
+  background-color: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+}

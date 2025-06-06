@@ -1,0 +1,76 @@
+// Login Page Styles
+@use 'variables' as *;
+@use 'layout' as *;
+.login-page {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+.login-bg-image {
+  position: absolute;
+  width: 100%;
+  opacity: 0.2;
+}
+.login-nav {
+  @extend .card;
+  border: none;
+}
+.login-nav .nav-inner {
+  @extend .container;
+  @extend .flex-space;
+  padding: 1rem 0;
+}
+.login-nav .nav-title {
+  font-family: $font-mono;
+  font-size: 1.5rem;
+}
+.login-nav .nav-links {
+  display: none;
+  @media (min-width: $breakpoint-md) {
+    display: flex;
+    gap: 1.5rem;
+  }
+}
+.login-nav .nav-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+}
+.login-nav .nav-menu {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+}
+.login-nav .nav-menu > a {
+  padding: 0.5rem 0;
+}
+.login-main {
+  @extend .flex-center;
+  flex-direction: column;
+  padding: 1rem;
+}
+.login-card {
+  @extend .card;
+  max-width: 480px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-radius: $radius-sm;
+}
+.login-card .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.login-card .form-input {
+  padding: 0.75rem;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-size: 1rem;
+}
+.login-card .form-footer {
+  @extend .flex-space;
+  font-size: 0.875rem;
+}
