@@ -10,6 +10,7 @@
 .dashboard-nav {
   @extend .card;
   border: none;
+  border-bottom: 1px solid $color-border;
   position: fixed;
   top: 0;
   left: 0;
@@ -77,24 +78,35 @@
   @media (max-width: $breakpoint-md) {
     display: none;
   }
+  .history-header {
+    font-family: $font-mono;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+  }
 }
-.dashboard-sidebar .history-header {
-  font-family: $font-mono;
-  font-size: 1rem;
-  padding: 1rem;
+.dashboard-sidebar .history-section {
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+}
+.dashboard-sidebar .history-group {
+  font-size: 0.75rem;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  padding: 0.25rem 1rem;
 }
 .dashboard-sidebar .history-list {
   list-style: none;
-  padding: 0 1rem;
-  flex-grow: 1;
+  padding: 0;
+  margin: 0;
 }
 .dashboard-sidebar .history-list li {
-  margin-bottom: 0.5rem;
+  padding: 0.25rem 1rem;
 }
 .dashboard-sidebar .history-list a {
   text-decoration: none;
   color: $color-text;
-  font-size: 0.875rem;
+  display: block;
 }
 .dashboard-sidebar .account-info {
   padding: 1rem;
@@ -102,6 +114,7 @@
   align-items: center;
   gap: 0.5rem;
   border-top: 1px solid $color-border;
+  margin-top: auto;
 }
 .dashboard-sidebar .account-info img {
   width: 32px;
