@@ -146,7 +146,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    justify-content: center;
+    justify-content: space-between;
     width: 100%;
   }
   @media (max-width: $breakpoint-md) {
@@ -160,7 +160,7 @@
 }
 .dashboard-card {
   @extend .card;
-  width: 356px;
+  flex: 1 1 356px;
   height: 475px;
   padding: 1rem;
   display: flex;
