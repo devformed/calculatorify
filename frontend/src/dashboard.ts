@@ -26,9 +26,6 @@ const cardsData: DashboardCard[] = [
   },
 ];
 
-/**
- * Renders dashboard cards into the container with id 'cardsContainer'.
- */
 export function renderDashboardCards(): void {
   const container = document.getElementById("cardsContainer");
   if (!container) return;
