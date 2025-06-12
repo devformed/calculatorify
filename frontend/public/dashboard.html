@@ -1,44 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - Calculatorify</title>
-  <link href="dist/styles.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard - Calculatorify</title>
+    <link href="dist/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="dashboard-page">
+<div class="dashboard-page">
     <nav class="dashboard-nav">
-      <div class="nav-inner">
-        <div class="nav-title">CALCULAT%RIFY</div>
-        <div class="nav-links">
-          <a href="#">About</a>
-          <a href="dashboard.html">Home</a>
-          <a href="#">Discover</a>
-          <a href="#">Log out</a>
+        <div class="nav-inner">
+            <div class="nav-title">CALCULAT%RIFY</div>
+            <div class="nav-links">
+                <a href="#">About</a>
+                <a href="dashboard.html">Home</a>
+                <a href="#">Discover</a>
+                <a href="#">Log out</a>
+            </div>
+            <button id="navToggle" class="nav-toggle">☰</button>
         </div>
-        <button id="navToggle" class="nav-toggle">☰</button>
-      </div>
     </nav>
     <aside id="sidebar" class="dashboard-sidebar">
-      <div class="history-header">History</div>
-      <div id="historyContainer"></div>
-      <div class="account-info">
-        <img src="https://placehold.co/32x32" alt="User Avatar" />
-        <span>John Doe</span>
-      </div>
+        <div class="history-header">History</div>
+        <div id="historyContainer"></div>
+        <div class="account-info">
+            <img src="https://placehold.co/32x32" alt="User Avatar"/>
+            <span>John Doe</span>
+        </div>
     </aside>
     <div id="sidebarResizer" class="sidebar-resizer"></div>
     <main id="mainContent" class="dashboard-main">
-      <h1 class="dashboard-title">What do you want to calculate?</h1>
-      <div class="ai-input-group">
-        <input type="text" id="aiPromptInput" placeholder="Find or create with AI..." />
-        <button type="button" id="aiSubmit" class="ai-submit">✨</button>
-      </div>
-      <div id="cardsContainer" class="dashboard-cards"></div>
+        <div class="ai-group">
+            <h1 class="dashboard-title">What do you want to calculate?</h1>
+            <div class="ai-input-group">
+                <input type="text" id="aiPromptInput" placeholder="Find or create with AI..."/>
+                <button type="button" id="aiSubmit" class="ai-submit">✨</button>
+            </div>
+        </div>
+        <div id="cardsContainer" class="dashboard-cards"></div>
     </main>
-  </div>
-  <script type="module" src="dist/dashboardPage.js"></script>
+</div>
+<script type="module" src="dist/dashboardPage.js"></script>
 </body>
 </html>
