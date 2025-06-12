@@ -30,9 +30,6 @@ const historyData: HistorySection[] = [
   }
 ];
 
-/**
- * Renders history sections into the container with id 'historyContainer'.
- */
 export function renderHistory(): void {
   const container = document.getElementById("historyContainer");
   if (!container) return;
