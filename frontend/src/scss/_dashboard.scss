@@ -142,6 +142,16 @@
   padding: 6rem 1rem 2rem;
   margin-left: 480px;
   flex-direction: column;
+  .dashboard-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    width: 100%;
+  }
+  @media (max-width: $breakpoint-md) {
+    margin-left: 0;
+  }
 }
 .dashboard-title {
   font-family: $font-mono;

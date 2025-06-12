@@ -23,25 +23,7 @@
     </nav>
     <aside id="sidebar" class="dashboard-sidebar">
       <div class="history-header">History</div>
-      <div class="history-section">
-        <div class="history-group">Today</div>
-        <ul class="history-list">
-          <li><a href="#">Salary Growth Calculator</a></li>
-        </ul>
-      </div>
-      <div class="history-section">
-        <div class="history-group">Yesterday</div>
-        <ul class="history-list">
-          <li><a href="#">Loan Repayment Calculator</a></li>
-        </ul>
-      </div>
-      <div class="history-section">
-        <div class="history-group">Last week</div>
-        <ul class="history-list">
-          <li><a href="#">Tax Estimator</a></li>
-          <li><a href="#">Savings Planner</a></li>
-        </ul>
-      </div>
+      <div id="historyContainer"></div>
       <div class="account-info">
         <img src="https://placehold.co/32x32" alt="User Avatar" />
         <span>John Doe</span>
@@ -50,21 +32,9 @@
     <div id="sidebarResizer" class="sidebar-resizer"></div>
     <main id="mainContent" class="dashboard-main">
       <h1 class="dashboard-title">What do you want to calculate?</h1>
-      <section class="dashboard-card">
-        <h2>Salary Growth Calculator</h2>
-        <p>Calculates your projected salary after a specified period, assuming a fixed percentage raise at regular intervals.</p>
-        <div class="range-group">
-          <label for="salarySlider">Starting Salary: <span id="salaryValue"></span></label>
-          <input type="range" id="salarySlider" min="0" max="100000" step="1000" />
-        </div>
-        <div class="range-group">
-          <label for="raiseSlider">Raise Percentage: <span id="raiseValue"></span></label>
-          <input type="range" id="raiseSlider" min="0" max="100" step="1" />
-        </div>
-        <button class="btn btn-primary">Calculate</button>
-      </section>
+      <div id="cardsContainer" class="dashboard-cards"></div>
     </main>
   </div>
-  <script type="module" src="dist/script.js"></script>
+  <script type="module" src="dist/dashboardPage.js"></script>
 </body>
 </html>
