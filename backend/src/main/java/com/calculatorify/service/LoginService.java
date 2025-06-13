@@ -5,6 +5,7 @@ import com.calculatorify.exception.HttpHandlerException;
 import com.calculatorify.model.dto.http.HttpPathContext;
 import com.calculatorify.model.dto.http.HttpResponse;
 import com.calculatorify.model.dto.user.UserDto;
+import com.calculatorify.model.dto.user.UserEntry;
 import com.calculatorify.model.repository.user.UserRepository;
 import com.calculatorify.util.Json;
 import com.calculatorify.util.http.HttpUtils;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -27,8 +29,10 @@ public class LoginService {
 
 	public HttpResponse login(HttpExchange exchange, HttpPathContext context) throws IOException {
 		BasicAuth auth = Json.fromJsonSneaky(HttpUtils.getRequestBody(exchange), BasicAuth.class);
+		UserEntry user = userRepository.findByUsername(auth.username())
+				.orElseThrow(() -> new NoSuchElementException("User not found"));
 
-		if (!BCrypt.checkpw(auth.password(), "somestoredhash")) { // todo fetch hash from db
+		if (!BCrypt.checkpw(auth.password(), user.getPassword())) {
 			throw new HttpHandlerException(401, "Unauthorized: Invalid username or password");
 		}
 		String sessionId = SessionManager.createSession(auth.username());
