@@ -39,13 +39,6 @@ public final class TransactionContext {
 		}
 	}
 
-	public static void inTransaction(Runnable runnable) throws Exception {
-		inTransaction(() -> {
-			runnable.run();
-			return null;
-		});
-	}
-
 	public static Connection getConnection() {
 		Connection txConn = CONTEXT.get();
 		if (txConn != null) {

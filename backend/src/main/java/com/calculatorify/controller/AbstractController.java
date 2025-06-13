@@ -7,7 +7,6 @@ import com.calculatorify.model.repository.TransactionContext;
 import com.calculatorify.service.HttpContextMatcher;
 import com.calculatorify.service.HttpRequestHandler;
 import com.calculatorify.util.http.HttpHeaders;
-import com.calculatorify.util.http.HttpUtils;
 import com.google.common.collect.ImmutableMap;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -42,20 +41,20 @@ public abstract class AbstractController implements HttpHandler {
 				exchange.sendResponseHeaders(HttpURLConnection.HTTP_NO_CONTENT, -1);
 				return;
 			}
-			// Skip session filter for login and register endpoints
-			String contextPath = exchange.getHttpContext().getPath();
-			if (!"/login".equals(contextPath) && !"/register".equals(contextPath)) {
-				sessionManager.requestFilter(exchange);
-			}
-			HttpContextMatcher matcher = handlers.keySet()
-					.stream()
-					.filter(m -> m.match(HttpMethod.of(exchange.getRequestMethod()), exchange.getRequestURI()))
-					.findAny()
-					.orElseThrow(() -> new HttpHandlerException(404, "Not Found: %s %s".formatted(exchange.getRequestMethod(), exchange.getRequestURI())));
-
-			HttpResponse response = nn(handlers.get(matcher)).handle(exchange, matcher.parse(exchange.getRequestURI()));
+            // Wrap handler execution in transaction to ensure connections are closed
+            HttpResponse response = TransactionContext.inTransaction(() -> {
+                // Skip session filter for login and register endpoints
+                String contextPath = exchange.getHttpContext().getPath();
+                if (!"/login".equals(contextPath) && !"/register".equals(contextPath)) {
+                    sessionManager.requestFilter(exchange);
+                }
+                HttpContextMatcher matcher = handlers.keySet().stream()
+                    .filter(m -> m.match(HttpMethod.of(exchange.getRequestMethod()), exchange.getRequestURI()))
+                    .findAny()
+                    .orElseThrow(() -> new HttpHandlerException(404, "Not Found: %s %s".formatted(exchange.getRequestMethod(), exchange.getRequestURI())));
+                return nn(handlers.get(matcher)).handle(exchange, matcher.parse(exchange.getRequestURI()));
+            });
 			sendResponse(exchange, response);
-			TransactionContext.end();
 		} catch (HttpHandlerException e) {
 			sendResponse(exchange, HttpResponse.text(e.getStatusCode(), e.getMessage()));
 		} catch (IllegalArgumentException | IllegalStateException | UnsupportedOperationException |
