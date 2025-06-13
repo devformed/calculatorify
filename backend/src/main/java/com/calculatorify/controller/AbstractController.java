@@ -30,6 +30,7 @@ import static com.calculatorify.util.Utils.nn;
 @RequiredArgsConstructor
 public abstract class AbstractController implements HttpHandler {
 
+	private final SessionManager sessionManager;
 	private final ImmutableMap<HttpContextMatcher, HttpRequestHandler> handlers;
 
 	@Override
@@ -40,7 +41,7 @@ public abstract class AbstractController implements HttpHandler {
 				exchange.sendResponseHeaders(HttpURLConnection.HTTP_NO_CONTENT, -1);
 				return;
 			}
-			validateAuthorized(exchange);
+			sessionManager.requestFilter(exchange);
 			HttpContextMatcher matcher = handlers.keySet()
 					.stream()
 					.filter(m -> m.match(HttpMethod.of(exchange.getRequestMethod()), exchange.getRequestURI()))
@@ -89,10 +90,5 @@ public abstract class AbstractController implements HttpHandler {
 		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "*");
 		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
-	}
-
-	private void validateAuthorized(HttpExchange exchange) {
-		HttpUtils.getSessionId(exchange)
-				.orElseThrow(() -> new HttpHandlerException(401, "Unauthorized access: SESSIONID not found"));
 	}
 }

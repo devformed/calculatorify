@@ -22,10 +22,6 @@ public final class ServiceRegistry {
 		SERVICES.put(clazz, service);
 	}
 
-	public static void register(Object service) {
-		register(service.getClass(), service);
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> T get(Class<T> clazz) {
 		return (T) nn(SERVICES.get(clazz));

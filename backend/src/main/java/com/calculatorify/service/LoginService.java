@@ -26,6 +26,7 @@ public class LoginService {
 	private static final int BCRYPT_COST_FACTOR = 12;
 
 	private final UserRepository userRepository;
+	private final SessionManager sessionManager;
 
 	public HttpResponse login(HttpExchange exchange, HttpPathContext context) throws IOException {
 		BasicAuth auth = Json.fromJsonSneaky(HttpUtils.getRequestBody(exchange), BasicAuth.class);
@@ -35,7 +36,7 @@ public class LoginService {
 		if (!BCrypt.checkpw(auth.password(), user.getPassword())) {
 			throw new HttpHandlerException(401, "Unauthorized: Invalid username or password");
 		}
-		String sessionId = SessionManager.createSession(auth.username());
+		String sessionId = sessionManager.createSession(user.getId());
 		exchange.getResponseHeaders().add("Set-Cookie", "SESSIONID=%s; Path=/".formatted(sessionId));
 		return HttpResponse.ok();
 	}
@@ -49,9 +50,14 @@ public class LoginService {
 		String hash = BCrypt.hashpw(auth.password(), salt);
 
 		UUID userId = userRepository.persist(new UserDto(auth.username(), hash));
-		String sessionId = SessionManager.createSession(auth.username());
+		String sessionId = sessionManager.createSession(userId);
 		exchange.getResponseHeaders().add("Set-Cookie", "SESSIONID=%s; Path=/".formatted(sessionId));
 		return HttpResponse.ok(userId);
+	}
+
+	public HttpResponse logout(HttpExchange exchange, HttpPathContext context) throws IOException {
+		HttpUtils.getSessionId(exchange).ifPresent(sessionManager::invalidateSession);
+		return HttpResponse.ok();
 	}
 
 	private record BasicAuth(String username, String password) { }

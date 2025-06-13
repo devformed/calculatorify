@@ -1,12 +1,16 @@
 package com.calculatorify;
 
-import com.calculatorify.controller.DashboardController;
+import com.calculatorify.controller.CalculatorsController;
 import com.calculatorify.controller.LoginController;
+import com.calculatorify.controller.SessionManager;
 import com.calculatorify.model.repository.DataSourceProvider;
 import com.calculatorify.model.repository.DataSourceProviderImpl;
 import com.calculatorify.model.repository.TransactionContext;
 import com.calculatorify.model.repository.user.UserRepository;
 import com.calculatorify.model.repository.user.UserRepositoryImpl;
+import com.calculatorify.model.repository.session.SessionRepository;
+import com.calculatorify.model.repository.session.SessionRepositoryImpl;
+import com.calculatorify.service.CalculatorService;
 import com.calculatorify.service.LoginService;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
@@ -29,7 +33,7 @@ public class Application {
     private static void startHttpServer() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         server.createContext("/api/login/*", get(LoginController.class));
-        server.createContext("/api/dashboard/*", get(DashboardController.class));
+        server.createContext("/api/dashboard/*", get(CalculatorsController.class));
         server.setExecutor(null);
         server.start();
         System.out.println("Server started on port " + PORT);
@@ -41,11 +45,13 @@ public class Application {
         TransactionContext.setDataSource(get(DataSourceProvider.class).getDataSource());
 
         ServiceRegistry.register(UserRepository.class, new UserRepositoryImpl());
+        ServiceRegistry.register(SessionRepository.class, new SessionRepositoryImpl());
         // service
-        ServiceRegistry.register(LoginService.class, new LoginService(get(UserRepository.class)));
+        ServiceRegistry.register(SessionManager.class, new SessionManager(get(SessionRepository.class)));
+        ServiceRegistry.register(LoginService.class, new LoginService(get(UserRepository.class), get(SessionManager.class)));
         // controllers
-        ServiceRegistry.register(new LoginController(get(LoginService.class)));
-        ServiceRegistry.register(new DashboardController());
+        ServiceRegistry.register(LoginController.class, new LoginController(get(SessionManager.class), get(LoginService.class)));
+        ServiceRegistry.register(CalculatorsController.class, new CalculatorsController(get(SessionManager.class), get(CalculatorService.class)));
     }
 
     private static void migrateDatabase() {
