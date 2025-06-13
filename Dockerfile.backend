@@ -1,0 +1,5 @@
+FROM amazoncorretto:21-alpine-jdk
+RUN apk update && apk add --no-cache maven bash
+WORKDIR /opt/calculatorify
+ENTRYPOINT [ "sh", "-c", \
+  "mvn -B clean package -DskipTests  && java -jar target/calculatorify-backend.jar" ]

@@ -1,0 +1,32 @@
+version: "2.4"
+services:
+  database:
+    container_name: calculatorify-local-database
+    image: 'postgres:17.5'
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER:      admin
+      POSTGRES_PASSWORD:  admin
+      POSTGRES_DB:        calculatorify
+    volumes:
+      - ./.pg_local_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d calculatorify" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+  backend:
+    container_name: calculatorify-local-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./backend:/opt/calculatorify
+      # optional mount for local Maven repository to achieve faster builds
+      - ${HOME}/.m2:/root/.m2
