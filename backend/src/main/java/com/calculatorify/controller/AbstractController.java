@@ -3,6 +3,7 @@ package com.calculatorify.controller;
 import com.calculatorify.exception.HttpHandlerException;
 import com.calculatorify.model.dto.http.HttpMethod;
 import com.calculatorify.model.dto.http.HttpResponse;
+import com.calculatorify.model.repository.TransactionContext;
 import com.calculatorify.service.HttpContextMatcher;
 import com.calculatorify.service.HttpRequestHandler;
 import com.calculatorify.util.http.HttpHeaders;
@@ -54,6 +55,7 @@ public abstract class AbstractController implements HttpHandler {
 
 			HttpResponse response = nn(handlers.get(matcher)).handle(exchange, matcher.parse(exchange.getRequestURI()));
 			sendResponse(exchange, response);
+			TransactionContext.end();
 		} catch (HttpHandlerException e) {
 			sendResponse(exchange, HttpResponse.text(e.getStatusCode(), e.getMessage()));
 		} catch (IllegalArgumentException | IllegalStateException | UnsupportedOperationException |

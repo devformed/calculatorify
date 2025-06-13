@@ -1,26 +1,14 @@
 {
-  "name": "calculatorify-frontend",
-  "version": "1.0.0",
   "scripts": {
     "build:css": "sass src/scss/main.scss public/dist/styles.css --no-source-map --style=compressed",
     "build:ts": "tsc",
-    "build": "npm run build:css && npm run build:ts",
-    "check-updates": "npx npm-check-updates -u",
-    "watch": "npm-watch",
-    "serve": "live-server public --watch=public,dist,src"
-  },
-  "watch": {
-    "build:css": {
-      "patterns": ["src/scss"],
-      "extensions": "scss"
-    },
-    "build:ts": {
-      "patterns": ["src"],
-      "extensions": "ts"
-    }
+    "watch:css": "sass --watch src/scss/main.scss:public/dist/styles.css --no-source-map --style=compressed",
+    "watch:ts": "tsc --watch",
+    "serve": "live-server public --watch=public,dist",
+    "dev": "concurrently --kill-others-on-fail \"npm run watch:css\" \"npm run watch:ts\" \"npm run serve\""
   },
   "devDependencies": {
-    "npm-watch": "^0.13.0",
+    "concurrently": "^8.0.0",
     "sass": "^1.89.1",
     "typescript": "^5.8.3",
     "live-server": "^1.2.1"

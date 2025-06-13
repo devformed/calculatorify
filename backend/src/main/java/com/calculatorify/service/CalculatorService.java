@@ -43,8 +43,16 @@ public class CalculatorService {
 			)
 	);
 
-	public HttpResponse getCalculators(HttpExchange exchange, HttpPathContext context) throws IOException {
-		String fullText = HttpUtils.getRequestBody(exchange);
-		return HttpResponse.ok(Json.toJson(CALCULATORS));
-	}
+   public HttpResponse getCalculators(HttpExchange exchange, HttpPathContext context) {
+       var params = context.queryParameters();
+       String q = params.getOrDefault("q", "").trim().toLowerCase();
+       List<CalculatorEntry> filtered = CALCULATORS;
+       if (!q.isEmpty()) {
+           filtered = CALCULATORS.stream()
+               .filter(c -> c.getTitle().toLowerCase().contains(q)
+                         || c.getDescription().toLowerCase().contains(q))
+               .collect(java.util.stream.Collectors.toList());
+       }
+       return HttpResponse.ok(filtered);
+   }
 }
