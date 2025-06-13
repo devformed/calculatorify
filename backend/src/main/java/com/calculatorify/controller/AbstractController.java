@@ -92,7 +92,7 @@ public abstract class AbstractController implements HttpHandler {
 		}
 		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "*");
-		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
+		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "OPTIONS,GET,POST,PUT,DELETE,PATCH");
+		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Origin,Content-Type,Accept,Authorization");
 	}
 }
