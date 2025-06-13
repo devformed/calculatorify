@@ -4,7 +4,7 @@
     "build:ts": "tsc",
     "watch:css": "sass --watch src/scss/main.scss:public/dist/styles.css --no-source-map --style=compressed",
     "watch:ts": "tsc --watch",
-    "serve": "live-server public --watch=public,dist",
+    "serve": "live-server public",
     "dev": "concurrently --kill-others-on-fail \"npm run watch:css\" \"npm run watch:ts\" \"npm run serve\""
   },
   "devDependencies": {
