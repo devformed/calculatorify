@@ -2,9 +2,9 @@ package com.calculatorify.model.repository.user;
 
 import com.calculatorify.model.dto.user.UserDto;
 import com.calculatorify.model.dto.user.UserEntry;
+import com.calculatorify.model.repository.TransactionContext;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,11 +36,9 @@ public class UserRepositoryImpl implements UserRepository {
 			WHERE username_ = ?
 			""";
 
-	private final DataSource ds;
-
 	@Override
 	public UUID persist(UserDto user) {
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_PERSIST)) {
+		try (Connection conn = TransactionContext.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_PERSIST)) {
 			ps.setString(1, user.getUsername());
 			ps.setString(2, user.getPassword());
 			ResultSet rs = ps.executeQuery();
@@ -52,7 +50,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Override
 	public void merge(UserEntry user) {
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_MERGE)) {
+		try (Connection conn = TransactionContext.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_MERGE)) {
 			ps.setString(1, user.getUsername());
 			ps.setString(2, user.getPassword());
 			ps.setString(3, user.getId().toString());
@@ -64,7 +62,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Override
 	public Optional<UserEntry> findByUsername(String username) {
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_USERNAME)) {
+		try (Connection conn = TransactionContext.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_USERNAME)) {
 			ps.setString(1, username);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
