@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 /**
  * HTTP path matcher and parser
+ *
  * @author Anton Gorokh
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -32,6 +33,7 @@ public final class HttpContextMatcher {
 	 * Creates a new {@link HttpContextMatcher} for the given path template.
 	 * The template can contain path variables in the form of "{variableName}".
 	 * Example: "/api/users/{userId}/posts/{postId}"
+	 *
 	 * @param template the path template
 	 * @return a new instance of {@link HttpContextMatcher}
 	 */
@@ -58,6 +60,7 @@ public final class HttpContextMatcher {
 
 	/**
 	 * Checks whether the path (ignoring any "?…" query params) matches the template.
+	 *
 	 * @return true if the path matches the template, false otherwise
 	 */
 	public boolean match(HttpMethod method, URI path) {
@@ -70,30 +73,26 @@ public final class HttpContextMatcher {
 
 	/**
 	 * Parses the path and extracts path variables and query parameters.
+	 *
 	 * @param path the full HTTP path, including query string if present
 	 * @return an instance of {@link HttpPathContext} containing path variables and query parameters
 	 * @throws IllegalStateException if the path does not match the template
 	 */
 	public HttpPathContext parse(URI path) {
-		String fullPath = path.getRawPath();
-		String rawPath = fullPath;
-		String qs = null;
-		int idx = fullPath.indexOf('?');
-		if (idx >= 0) {
-			rawPath = fullPath.substring(0, idx);
-			qs = fullPath.substring(idx + 1);
-		}
+		String rawPath = path.getRawPath();
+		String qs = path.getRawQuery();
 
+		// match against the template
 		Matcher m = pathPattern.matcher(rawPath);
 		if (!m.matches()) {
 			throw new IllegalStateException("Path '" + rawPath + "' does not match template");
 		}
-
+		// extract path variables
 		Map<String, String> variables = new LinkedHashMap<>();
 		for (String name : pathVariables) {
 			variables.put(name, m.group(name));
 		}
-
+		// extract query parameters
 		Map<String, String> parameters = new LinkedHashMap<>();
 		if (qs != null && !qs.isEmpty()) {
 			for (String pair : qs.split("&")) {

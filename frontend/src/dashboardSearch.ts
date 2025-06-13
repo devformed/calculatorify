@@ -12,10 +12,12 @@ async function onInputChanged(aiInput: HTMLInputElement) {
     const query = aiInput.value.trim();
     try {
         const url = new URL('http://localhost:8080/calculators');
+        if (query) {
+            url.searchParams.set('q', query);
+        }
         const resp = await fetch(url.toString(), {
             method: 'GET',
             credentials: 'include',
-            body: query
         });
         if (!resp.ok) {
             console.error('Search failed:', resp.status);

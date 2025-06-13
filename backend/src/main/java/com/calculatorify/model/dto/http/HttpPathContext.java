@@ -7,6 +7,14 @@ import java.util.Map;
  */
 public record HttpPathContext(
 		Map<String, String> pathVariables,
-		Map<String, String> queryParameters
+		Map<String, String> requestParams
 ) {
+
+	public String getPathVariable(String name) {
+		return pathVariables.get(name);
+	}
+
+	public String getRequestParam(String name) {
+		return requestParams.get(name);
+	}
 }
