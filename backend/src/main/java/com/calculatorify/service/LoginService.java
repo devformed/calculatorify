@@ -1,0 +1,54 @@
+package com.calculatorify.service;
+
+import com.calculatorify.controller.SessionManager;
+import com.calculatorify.exception.HttpHandlerException;
+import com.calculatorify.model.dto.http.HttpPathContext;
+import com.calculatorify.model.dto.http.HttpResponse;
+import com.calculatorify.model.dto.user.UserDto;
+import com.calculatorify.model.repository.user.UserRepository;
+import com.calculatorify.util.Json;
+import com.calculatorify.util.http.HttpUtils;
+import com.sun.net.httpserver.HttpExchange;
+import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.io.IOException;
+import java.util.UUID;
+
+/**
+ * @author Anton Gorokh
+ */
+@RequiredArgsConstructor
+public class LoginService {
+
+	private static final int BCRYPT_COST_FACTOR = 12;
+
+	private final UserRepository userRepository;
+
+	public HttpResponse login(HttpExchange exchange, HttpPathContext context) throws IOException {
+		BasicAuth auth = Json.fromJsonSneaky(HttpUtils.getRequestBody(exchange), BasicAuth.class);
+
+		if (!BCrypt.checkpw(auth.password(), "somestoredhash")) { // todo fetch hash from db
+			throw new HttpHandlerException(401, "Unauthorized: Invalid username or password");
+		}
+		String sessionId = SessionManager.createSession(auth.username());
+		exchange.getResponseHeaders().add("Set-Cookie", "SESSIONID=%s; Path=/".formatted(sessionId));
+		return HttpResponse.ok();
+	}
+
+	public HttpResponse register(HttpExchange exchange, HttpPathContext context) throws IOException {
+		BasicAuth auth = Json.fromJsonSneaky(HttpUtils.getRequestBody(exchange), BasicAuth.class);
+		if (userRepository.findByUsername(auth.username()).isPresent()) {
+			throw new HttpHandlerException(400, "Username %s already exists".formatted(auth.username()));
+		}
+		String salt = BCrypt.gensalt(BCRYPT_COST_FACTOR);
+		String hash = BCrypt.hashpw(auth.password(), salt);
+
+		UUID userId = userRepository.persist(new UserDto(auth.username(), hash));
+		String sessionId = SessionManager.createSession(auth.username());
+		exchange.getResponseHeaders().add("Set-Cookie", "SESSIONID=%s; Path=/".formatted(sessionId));
+		return HttpResponse.ok(userId);
+	}
+
+	private record BasicAuth(String username, String password) { }
+}
