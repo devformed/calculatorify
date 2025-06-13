@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.MockedStatic;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import static org.mockito.Answers.CALLS_REAL_METHODS;
@@ -30,6 +31,8 @@ public abstract class AbstractTest {
 	static {
 		CONTAINER_POSTGRES.start();
 	}
+
+	protected static final UUID TEST_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
 	protected HikariDataSource dataSource;
 	protected MockedStatic<TransactionContext> txSpy;

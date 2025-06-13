@@ -2,6 +2,7 @@ package com.calculatorify.controller;
 
 import com.calculatorify.exception.HttpHandlerException;
 import com.calculatorify.model.dto.session.SessionDto;
+import com.calculatorify.model.dto.session.SessionEntry;
 import com.calculatorify.model.repository.session.SessionRepository;
 import com.calculatorify.util.http.HttpUtils;
 import com.sun.net.httpserver.HttpExchange;
@@ -17,18 +18,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class SessionManager {
 
-	private final SessionRepository sessionRepo;
+	private final SessionRepository repository;
 
 	public void requestFilter(HttpExchange exchange) {
-		Optional<SessionDto> session = HttpUtils.getSessionId(exchange)
+		Optional<SessionEntry> session = HttpUtils.getSessionId(exchange)
 				.map(UUID::fromString)
-				.flatMap(sessionRepo::findById)
+				.flatMap(repository::findById)
 				.map(sessionDto -> sessionDto.setAccessedAt(Instant.now()));
 
 		if (session.isEmpty()) {
 			throw new HttpHandlerException(401, "Unauthorized access: SESSIONID not found");
 		}
-		sessionRepo.merge(session.get());
+		repository.merge(session.get());
 	}
 
 	public String createSession(UUID userId) {
@@ -37,7 +38,7 @@ public final class SessionManager {
 				.userId(userId)
 				.accessedAt(now)
 				.build();
-		UUID sessionId = sessionRepo.persist(session);
+		UUID sessionId = repository.persist(session);
 		return sessionId.toString();
 	}
 
@@ -47,28 +48,9 @@ public final class SessionManager {
 		}
 		try {
 			UUID id = UUID.fromString(sessionId);
-			sessionRepo.delete(id);
+			repository.delete(id);
 		} catch (IllegalArgumentException e) {
 			// ignore invalid format
 		}
-	}
-
-	public boolean valid(String sessionId) {
-		if (sessionId == null) {
-			return false;
-		}
-		UUID id = UUID.fromString(sessionId);
-		Optional<SessionDto> sessionOpt = sessionRepo.findById(id);
-		if (sessionOpt.isEmpty()) {
-			return false;
-		}
-		SessionDto session = sessionOpt.get();
-		SessionDto updated = SessionDto.builder()
-				.id(session.getId())
-				.userId(session.getUserId())
-				.accessedAt(Instant.now())
-				.build();
-		sessionRepo.merge(updated);
-		return true;
 	}
 }

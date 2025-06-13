@@ -23,7 +23,7 @@ public class UserRepositoryImplTest extends AbstractTest {
 	@BeforeEach
 	public void preconditions() {
 		// ensure rollback actually works
-		assertEquals(0, userRepository.count());
+		assertEquals(1, userRepository.count());
 	}
 
     @Test

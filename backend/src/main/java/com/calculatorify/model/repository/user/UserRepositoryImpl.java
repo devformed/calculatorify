@@ -20,25 +20,25 @@ import java.util.UUID;
 public class UserRepositoryImpl implements UserRepository {
 
 	private static final String SQL_PERSIST = """
-			INSERT INTO users_ (username_, password_)
+			INSERT INTO user_ (username_, password_)
 			VALUES(?, ?)
 			RETURNING id_
 			""";
 
 	private static final String SQL_MERGE = """
-			UPDATE users_
+			UPDATE user_
 			SET username_ = ?, password_ = ?
 			WHERE id_ = ?
 			""";
 
 	private static final String SQL_FIND_BY_USERNAME = """
 			SELECT id_, username_, password_
-			FROM users_
+			FROM user_
 			WHERE username_ = ?
 			""";
 
 private static final String SQL_COUNT = """
-			SELECT COUNT(1) FROM users_
+			SELECT COUNT(1) FROM user_
 			""";
 
 	@Override

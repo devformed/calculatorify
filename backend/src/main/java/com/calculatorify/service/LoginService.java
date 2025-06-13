@@ -61,4 +61,10 @@ public class LoginService {
 	}
 
 	private record BasicAuth(String username, String password) { }
+
+	public static void main(String[] args) {
+		String salt = BCrypt.gensalt(BCRYPT_COST_FACTOR);
+		String hash = BCrypt.hashpw("admin", salt);
+		System.out.println(hash);
+	}
 }

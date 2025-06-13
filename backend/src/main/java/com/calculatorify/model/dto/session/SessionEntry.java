@@ -10,16 +10,22 @@ import lombok.experimental.Accessors;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * @author Anton Gorokh
+ */
 @Getter
 @Setter
 @Builder
 @Accessors(chain = true)
 @AllArgsConstructor
-public class SessionDto {
+public class SessionEntry {
 
-    @NotNull
-    private UUID userId;
+	@NotNull
+	private UUID id;
 
-    @NotNull
-    private Instant accessedAt;
+	@NotNull
+	private UUID userId;
+
+	@NotNull
+	private Instant accessedAt;
 }
