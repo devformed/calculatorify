@@ -32,8 +32,10 @@ public class Application {
 
     private static void startHttpServer() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        server.createContext("/api/login/*", get(LoginController.class));
-        server.createContext("/api/dashboard/*", get(CalculatorsController.class));
+        server.createContext("/login", get(LoginController.class));
+        server.createContext("/register", get(LoginController.class));
+        server.createContext("/logout", get(LoginController.class));
+        server.createContext("/calculators/*", get(CalculatorsController.class));
         server.setExecutor(null);
         server.start();
         System.out.println("Server started on port " + PORT);

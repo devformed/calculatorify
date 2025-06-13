@@ -41,7 +41,11 @@ public abstract class AbstractController implements HttpHandler {
 				exchange.sendResponseHeaders(HttpURLConnection.HTTP_NO_CONTENT, -1);
 				return;
 			}
-			sessionManager.requestFilter(exchange);
+			// Skip session filter for login and register endpoints
+			String contextPath = exchange.getHttpContext().getPath();
+			if (!"/login".equals(contextPath) && !"/register".equals(contextPath)) {
+				sessionManager.requestFilter(exchange);
+			}
 			HttpContextMatcher matcher = handlers.keySet()
 					.stream()
 					.filter(m -> m.match(HttpMethod.of(exchange.getRequestMethod()), exchange.getRequestURI()))

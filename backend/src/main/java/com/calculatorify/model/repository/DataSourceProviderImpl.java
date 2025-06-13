@@ -16,7 +16,7 @@ public class DataSourceProviderImpl implements DataSourceProvider {
 	private static final HikariDataSource DATA_SOURCE;
 
 	static {
-		try (InputStream in = Resources.getResource(DataSourceProvider.class, "db.properties").openStream()) {
+		try (InputStream in = Resources.getResource("db.properties").openStream()) {
 			Properties p = new Properties();
 			if (in == null) throw new IllegalStateException("db.properties not found");
 			p.load(in);
