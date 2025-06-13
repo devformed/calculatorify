@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,12 +37,20 @@ public class UserRepositoryImpl implements UserRepository {
 			WHERE username_ = ?
 			""";
 
+private static final String SQL_COUNT = """
+			SELECT COUNT(1) FROM users_
+			""";
+
 	@Override
 	public UUID persist(UserDto user) {
-		try (Connection conn = TransactionContext.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_PERSIST)) {
+		Connection conn = TransactionContext.getConnection();
+		try (PreparedStatement ps = conn.prepareStatement(SQL_PERSIST)) {
 			ps.setString(1, user.getUsername());
 			ps.setString(2, user.getPassword());
 			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				throw new SQLException("INSERT did not return an ID");
+			}
 			return rs.getObject("id_", UUID.class);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -50,10 +59,11 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Override
 	public void merge(UserEntry user) {
-		try (Connection conn = TransactionContext.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_MERGE)) {
+		Connection conn = TransactionContext.getConnection();
+		try (PreparedStatement ps = conn.prepareStatement(SQL_MERGE)) {
 			ps.setString(1, user.getUsername());
 			ps.setString(2, user.getPassword());
-			ps.setString(3, user.getId().toString());
+			ps.setObject(3, user.getId(), Types.OTHER);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -62,7 +72,8 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Override
 	public Optional<UserEntry> findByUsername(String username) {
-		try (Connection conn = TransactionContext.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_USERNAME)) {
+		Connection conn = TransactionContext.getConnection();
+		try (PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_USERNAME)) {
 			ps.setString(1, username);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
@@ -73,6 +84,20 @@ public class UserRepositoryImpl implements UserRepository {
 					.username(rs.getString("username_"))
 					.password(rs.getString("password_"))
 					.build());
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Long count() {
+		Connection conn = TransactionContext.getConnection();
+		try (PreparedStatement ps = conn.prepareStatement(SQL_COUNT)) {
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				return 0L;
+			}
+			return rs.getLong(1);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

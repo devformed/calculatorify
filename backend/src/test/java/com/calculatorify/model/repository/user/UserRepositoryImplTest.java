@@ -3,6 +3,7 @@ package com.calculatorify.model.repository.user;
 import com.calculatorify.model.dto.user.UserDto;
 import com.calculatorify.model.dto.user.UserEntry;
 import com.calculatorify.model.repository.AbstractTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -18,6 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UserRepositoryImplTest extends AbstractTest {
 
     private final UserRepository userRepository = new UserRepositoryImpl();
+
+	@BeforeEach
+	public void preconditions() {
+		// ensure rollback actually works
+		assertEquals(0, userRepository.count());
+	}
 
     @Test
 	public void testFindNotFound() {

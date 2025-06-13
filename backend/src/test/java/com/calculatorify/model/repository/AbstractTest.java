@@ -67,6 +67,9 @@ public abstract class AbstractTest {
 
 	@AfterEach
 	public void afterEach() {
+		if (!TransactionContext.isTransactionActive()) {
+			return;
+		}
 		TransactionContext.rollback();
 		TransactionContext.end();
 	}

@@ -16,4 +16,6 @@ public interface UserRepository {
 	void merge(UserEntry user);
 
 	Optional<UserEntry> findByUsername(String username);
+
+	Long count();
 }
