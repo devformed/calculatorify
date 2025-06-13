@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mockStatic;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractTest {
 
-	private static final PostgreSQLContainer<?> CONTAINER_POSTGRES = new PostgreSQLContainer<>("postgres:17-alpine")
+	private static final PostgreSQLContainer<?> CONTAINER_POSTGRES = new PostgreSQLContainer<>("postgres:17.5")
 			.withCreateContainerCmdModifier(cmd -> cmd.withName("calculatorify-test-postgres"))
 			.withDatabaseName("testdb")
 			.withUsername("test")

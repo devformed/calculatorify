@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(Lifecycle.PER_CLASS)
 public class UserRepositoryImplTest extends AbstractTest {
 
-	private final UserRepository userRepository = new UserRepositoryImpl();
+    private final UserRepository userRepository = new UserRepositoryImpl();
 
-	@Test
+    @Test
 	public void testFindNotFound() {
 		Optional<UserEntry> result = userRepository.findByUsername("nonexistent");
 		assertTrue(result.isEmpty());
