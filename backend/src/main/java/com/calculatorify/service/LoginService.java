@@ -37,7 +37,10 @@ public class LoginService {
 			throw new HttpHandlerException(401, "Unauthorized: Invalid username or password");
 		}
 		String sessionId = sessionManager.createSession(user.getId());
-		exchange.getResponseHeaders().add("Set-Cookie", "SESSIONID=%s; Path=/".formatted(sessionId));
+       exchange.getResponseHeaders().add(
+           "Set-Cookie",
+           "SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
+       );
 		return HttpResponse.ok();
 	}
 
@@ -51,7 +54,10 @@ public class LoginService {
 
 		UUID userId = userRepository.persist(new UserDto(auth.username(), hash));
 		String sessionId = sessionManager.createSession(userId);
-		exchange.getResponseHeaders().add("Set-Cookie", "SESSIONID=%s; Path=/".formatted(sessionId));
+       exchange.getResponseHeaders().add(
+           "Set-Cookie",
+           "SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
+       );
 		return HttpResponse.ok(userId);
 	}
 

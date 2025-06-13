@@ -85,14 +85,18 @@ public abstract class AbstractController implements HttpHandler {
 	}
 
 	private void addCorsHeaders(HttpExchange exchange) {
-		String origin = exchange.getRequestHeaders().getFirst(HttpHeaders.ORIGIN);
-		if (origin == null) {
-			exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-			return;
-		}
-		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "OPTIONS,GET,POST,PUT,DELETE,PATCH");
-		exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Origin,Content-Type,Accept,Authorization");
+       String origin = exchange.getRequestHeaders().getFirst(HttpHeaders.ORIGIN);
+       if (origin == null) {
+           exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+           return;
+       }
+       exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+       exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+       // Support preflight and actual request with JSON content
+       exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "OPTIONS,GET,POST,PUT,DELETE,PATCH");
+       exchange.getResponseHeaders().add(
+           HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+           "Origin,Content-Type,Accept,Authorization,Access-Control-Request-Method,Access-Control-Request-Headers"
+       );
 	}
 }
