@@ -37,7 +37,7 @@ public class Application {
 		server.createContext("/login", get(LoginController.class));
 		server.createContext("/register", get(LoginController.class));
 		server.createContext("/logout", get(LoginController.class));
-		server.createContext("/calculators/*", get(CalculatorsController.class));
+		server.createContext("/calculators", get(CalculatorsController.class));
 		server.setExecutor(null);
 		server.start();
 		System.out.println("Server started on port " + PORT);

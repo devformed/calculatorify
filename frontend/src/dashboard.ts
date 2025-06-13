@@ -7,13 +7,9 @@ export async function renderDashboardCards(): Promise<void> {
   const container = document.getElementById("cardsContainer");
   if (!container) return;
   try {
-    const response = await fetch("http://localhost:8000/api/cards", { credentials: "include" });
-    if (response.status === 401) {
-      window.location.href = "/login.html";
-      return;
-    }
+    const response = await fetch("http://localhost:8080/calculators", { method: 'GET', credentials: "include" });
     if (!response.ok) {
-      console.error("Failed to load dashboard cards:", response.status);
+      console.error("Failed to load calculators:", response.status);
       return;
     }
     const cards: DashboardCard[] = await response.json();
@@ -34,6 +30,6 @@ export async function renderDashboardCards(): Promise<void> {
       container.append(cardEl);
     });
   } catch (error) {
-    console.error("Error fetching dashboard cards:", error);
+    console.error("Error fetching calculator cards:", error);
   }
 }
