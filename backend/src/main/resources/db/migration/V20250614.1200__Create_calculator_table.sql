@@ -66,25 +66,32 @@ INSERT INTO calculator_ (title_,
                          description_,
                          config_,
                          user_id_)
-VALUES ('Test test',
-        'Test test test test test test test',
+VALUES ('BMI Calculator',
+        'Oblicza wskaźnik masy ciała (BMI)',
         $${
           "inputs": [
             {
-              "type": "SLIDER",
-              "id": "number",
-              "name": "Liczba",
-              "minValue": 1,
-              "maxValue": 10,
-              "step": 1,
+              "type": "NUMBER",
+              "id": "weight",
+              "name": "Waga (kg)",
+              "number": 70,
+              "precision": 1,
+              "order": 1
+            },
+            {
+              "type": "NUMBER",
+              "id": "height",
+              "name": "Wzrost (cm)",
+              "number": 175,
+              "precision": 1,
               "order": 1
             }
           ],
           "outputs": [
             {
-              "name": "Monthly Payment",
-              "formula": "(((1 + 5) / 7) - ${number}) * 3",
-              "precision": 2,
+              "name": "Wskaźnik masy ciała (BMI)",
+              "formula": "ROUND_TO_N(${weight} / POW(${height} / 100, 2), 1)",
+              "precision": 1,
               "order": 1
             }
           ]
