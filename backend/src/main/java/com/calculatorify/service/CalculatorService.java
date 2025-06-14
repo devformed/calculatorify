@@ -93,12 +93,23 @@ public class CalculatorService {
 		return HttpResponse.ok();
 	}
 
-	public HttpResponse construct(HttpExchange exchange, HttpPathContext context) throws Exception {
+	public HttpResponse create(HttpExchange exchange, HttpPathContext context) throws Exception {
 		String sessionId = HttpUtils.getSessionId(exchange)
 				.orElseThrow(() -> new HttpHandlerException(401, "Unauthorized"));
-		sessionRepository.findById(UUID.fromString(sessionId))
+		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId))
 				.orElseThrow(() -> new HttpHandlerException(401, "Invalid session"));
 
+		String body = HttpUtils.getRequestBody(exchange);
+		CalculatorDto dto = Json.fromJson(body, CalculatorDto.class);
+		dto.setCreatedAt(Instant.now());
+		dto.setUpdatedAt(Instant.now());
+		dto.setUserId(sessionEntry.getUserId());
+
+		UUID id = repository.persist(dto);
+		return HttpResponse.ok(id);
+	}
+
+	public HttpResponse construct(HttpExchange exchange, HttpPathContext context) throws Exception {
 		String prompt = context.getRequestParam("query");
 		System.out.println(prompt);
 
