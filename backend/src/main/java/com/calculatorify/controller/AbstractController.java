@@ -63,6 +63,7 @@ public abstract class AbstractController implements HttpHandler {
 			sendResponse(exchange, HttpResponse.text(HttpURLConnection.HTTP_BAD_REQUEST, e.getMessage()));
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
+			e.printStackTrace();
 			sendResponse(exchange, HttpResponse.text(HttpURLConnection.HTTP_INTERNAL_ERROR, "Internal Server Error: %s".formatted(e.getMessage())));
 		} finally {
 			exchange.close();

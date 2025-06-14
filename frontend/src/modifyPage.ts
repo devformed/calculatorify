@@ -226,13 +226,13 @@ interface CalculatorConfig {
 
 // Entry from GET /calculators/{id}, including metadata and postfix map
 interface CalculatorEntry {
-  id: string;
-  title: string;
-  description?: string;
-  config: CalculatorConfig;
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
+    id: string;
+    title: string;
+    description?: string;
+    config: CalculatorConfig;
+    createdAt: string;
+    updatedAt: string;
+    userId: string;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -241,7 +241,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     initDashboardSearch();
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
-    if (!id) return;
+    const prompt = params.get('prompt');
+    let card: CalculatorEntry;
+
+    // Helper to show loader
+    function showLoader() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loader-overlay';
+        overlay.innerHTML = '<div class="spinner"></div>';
+        document.body.append(overlay);
+        return overlay;
+    }
+
+    // Load entry by prompt or by id
+    if (prompt) {
+        // create from AI
+        const loader = showLoader();
+        const resp = await fetch(`http://localhost:8080/calculators/construct?query=${encodeURIComponent(prompt)}`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        loader.remove();
+        if (!resp.ok) {
+            const txt = await resp.text();
+            alert(`Construction failed: ${resp.status} ${txt}`);
+            return;
+        }
+        card = await resp.json();
+    } else if (id) {
+        const resp = await fetch(`http://localhost:8080/calculators/${id}`, {method: 'GET', credentials: 'include'});
+        if (!resp.ok) {
+            console.error('Failed to load calculator:', resp.status);
+            return;
+        }
+        card = await resp.json();
+    } else {
+        return;
+    }
     try {
         const resp = await fetch(`http://localhost:8080/calculators/${id}`, {
             method: 'GET',
@@ -266,7 +302,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 card.title = titleEl.textContent || card.title;
             });
             titleEl.addEventListener('keydown', e => {
-                if (e.key === 'Enter') { e.preventDefault(); titleEl.blur(); }
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    titleEl.blur();
+                }
             });
         }
         const inputsContainer = document.getElementById('inputsContainer') as HTMLElement;
@@ -283,7 +322,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             descriptionEl.contentEditable = 'false';
             card.description = descriptionEl.textContent || '';
         });
-        descriptionEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); descriptionEl.blur(); }});
+        descriptionEl.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                descriptionEl.blur();
+            }
+        });
         // Inputs section
         if (card.config.inputs && card.config.inputs.length) {
             const inpLabel = document.createElement('div');
@@ -305,19 +349,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                         label.htmlFor = `${card.id}-${slider.id}`;
                         label.className = 'modify-slider-label';
                         // Create label with name and range group
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = slider.name;
-            // inline edit input label
-            nameSpan.style.cursor = 'pointer';
-            nameSpan.addEventListener('click', () => {
-              nameSpan.contentEditable = 'true';
-              nameSpan.focus();
-            });
-            nameSpan.addEventListener('blur', () => {
-              nameSpan.contentEditable = 'false';
-              slider.name = nameSpan.textContent || slider.name;
-            });
-            nameSpan.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nameSpan.blur(); }});
+                        const nameSpan = document.createElement('span');
+                        nameSpan.textContent = slider.name;
+                        // inline edit input label
+                        nameSpan.style.cursor = 'pointer';
+                        nameSpan.addEventListener('click', () => {
+                            nameSpan.contentEditable = 'true';
+                            nameSpan.focus();
+                        });
+                        nameSpan.addEventListener('blur', () => {
+                            nameSpan.contentEditable = 'false';
+                            slider.name = nameSpan.textContent || slider.name;
+                        });
+                        nameSpan.addEventListener('keydown', e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                nameSpan.blur();
+                            }
+                        });
                         const minSpan = document.createElement('span');
                         minSpan.className = 'slider-range-min';
                         minSpan.textContent = String(min);
@@ -387,20 +436,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const numIn = input as NumberInput;
                         const label = document.createElement('label');
                         label.htmlFor = `${card.id}-${numIn.id}`;
-            const nameSpan2 = document.createElement('span');
-            nameSpan2.textContent = numIn.name;
-            nameSpan2.style.cursor = 'pointer';
-            nameSpan2.addEventListener('click', () => {
-              nameSpan2.contentEditable = 'true';
-              nameSpan2.focus();
-            });
-            nameSpan2.addEventListener('blur', () => {
-              nameSpan2.contentEditable = 'false';
-              numIn.name = nameSpan2.textContent || numIn.name;
-            });
-            nameSpan2.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nameSpan2.blur(); }});
-            label.textContent = '';
-            label.append(nameSpan2);
+                        const nameSpan2 = document.createElement('span');
+                        nameSpan2.textContent = numIn.name;
+                        nameSpan2.style.cursor = 'pointer';
+                        nameSpan2.addEventListener('click', () => {
+                            nameSpan2.contentEditable = 'true';
+                            nameSpan2.focus();
+                        });
+                        nameSpan2.addEventListener('blur', () => {
+                            nameSpan2.contentEditable = 'false';
+                            numIn.name = nameSpan2.textContent || numIn.name;
+                        });
+                        nameSpan2.addEventListener('keydown', e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                nameSpan2.blur();
+                            }
+                        });
+                        label.textContent = '';
+                        label.append(nameSpan2);
                         const numEl = document.createElement('input');
                         numEl.type = 'number';
                         numEl.id = `${card.id}-${numIn.id}`;
@@ -411,20 +465,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const rad = input as RadioButtonsInput;
                         const fieldset = document.createElement('fieldset');
                         const legend = document.createElement('legend');
-            const legendSpan = document.createElement('span');
-            legendSpan.textContent = rad.name;
-            legendSpan.style.cursor = 'pointer';
-            legendSpan.addEventListener('click', () => {
-              legendSpan.contentEditable = 'true';
-              legendSpan.focus();
-            });
-            legendSpan.addEventListener('blur', () => {
-              legendSpan.contentEditable = 'false';
-              rad.name = legendSpan.textContent || rad.name;
-            });
-            legendSpan.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); legendSpan.blur(); }});
-            legend.textContent = '';
-            legend.append(legendSpan);
+                        const legendSpan = document.createElement('span');
+                        legendSpan.textContent = rad.name;
+                        legendSpan.style.cursor = 'pointer';
+                        legendSpan.addEventListener('click', () => {
+                            legendSpan.contentEditable = 'true';
+                            legendSpan.focus();
+                        });
+                        legendSpan.addEventListener('blur', () => {
+                            legendSpan.contentEditable = 'false';
+                            rad.name = legendSpan.textContent || rad.name;
+                        });
+                        legendSpan.addEventListener('keydown', e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                legendSpan.blur();
+                            }
+                        });
+                        legend.textContent = '';
+                        legend.append(legendSpan);
                         fieldset.append(legend);
                         Object.entries(rad.nameValueOptions).forEach(([optName, optVal], idx) => {
                             const optionId = `${card.id}-${rad.id}-${idx}`;
@@ -470,14 +529,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                     labelEl.style.cursor = 'pointer';
                     const outObj = card.config.outputs.find(o => o.name === name)!;
                     labelEl.addEventListener('click', () => {
-                      labelEl.contentEditable = 'true';
-                      labelEl.focus();
+                        labelEl.contentEditable = 'true';
+                        labelEl.focus();
                     });
                     labelEl.addEventListener('blur', () => {
-                      labelEl.contentEditable = 'false';
-                      outObj.name = labelEl.textContent || outObj.name;
+                        labelEl.contentEditable = 'false';
+                        outObj.name = labelEl.textContent || outObj.name;
                     });
-                    labelEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); labelEl.blur(); }});
+                    labelEl.addEventListener('keydown', e => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            labelEl.blur();
+                        }
+                    });
                     const valueEl = document.createElement('span');
                     valueEl.className = 'dashboard-card-output-value';
                     valueEl.textContent = ''; // will be computed
@@ -515,69 +579,69 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-    // Attach listeners
-    computeOutputs();
-    // on input change, recompute outputs
-    card.config.inputs.forEach(inp => {
-      const el = document.getElementById(`${card.id}-${inp.id}`);
-      if (el) el.addEventListener('input', computeOutputs);
-    });
-    // Save changes button
-    const saveBtn = document.getElementById('saveChanges') as HTMLButtonElement;
-    const deleteBtn = document.getElementById('deleteCalculator') as HTMLButtonElement;
-    if (deleteBtn) {
-      deleteBtn.addEventListener('click', async () => {
-        if (!confirm('Are you sure you want to delete this calculator?')) return;
-        try {
-          const resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
-            method: 'DELETE',
-            credentials: 'include'
-          });
-          if (!resp.ok) {
-            const text = await resp.text();
-            alert(`Delete failed: ${resp.status} ${text}`);
-          } else {
-            alert('Deleted successfully');
-            window.location.href = 'dashboard.html';
-          }
-        } catch (err) {
-          console.error('Error deleting:', err);
-          alert('Error deleting calculator');
+        // Attach listeners
+        computeOutputs();
+        // on input change, recompute outputs
+        card.config.inputs.forEach(inp => {
+            const el = document.getElementById(`${card.id}-${inp.id}`);
+            if (el) el.addEventListener('input', computeOutputs);
+        });
+        // Save changes button
+        const saveBtn = document.getElementById('saveChanges') as HTMLButtonElement;
+        const deleteBtn = document.getElementById('deleteCalculator') as HTMLButtonElement;
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async () => {
+                if (!confirm('Are you sure you want to delete this calculator?')) return;
+                try {
+                    const resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    });
+                    if (!resp.ok) {
+                        const text = await resp.text();
+                        alert(`Delete failed: ${resp.status} ${text}`);
+                    } else {
+                        alert('Deleted successfully');
+                        window.location.href = 'dashboard.html';
+                    }
+                } catch (err) {
+                    console.error('Error deleting:', err);
+                    alert('Error deleting calculator');
+                }
+            });
         }
-      });
-    }
-    if (saveBtn) {
-      saveBtn.addEventListener('click', async () => {
-        try {
-          // Prepare updated fields
-          // Build full CalculatorDto payload
-          const payload = {
-            id: card.id,
-            title: card.title,
-            description: descriptionEl.textContent,
-            config: card.config,
-            createdAt: card.createdAt,
-            updatedAt: card.updatedAt,
-            userId: card.userId
-          };
-          const resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
-            method: 'PUT',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (!resp.ok) {
-            const text = await resp.text();
-            alert(`Save failed: ${resp.status} ${text}`);
-          } else {
-            alert('Saved successfully');
-          }
-        } catch (err) {
-          console.error('Error saving:', err);
-          alert('Error saving changes');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                try {
+                    // Prepare updated fields
+                    // Build full CalculatorDto payload
+                    const payload = {
+                        id: card.id,
+                        title: card.title,
+                        description: descriptionEl.textContent,
+                        config: card.config,
+                        createdAt: card.createdAt,
+                        updatedAt: card.updatedAt,
+                        userId: card.userId
+                    };
+                    const resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(payload)
+                    });
+                    if (!resp.ok) {
+                        const text = await resp.text();
+                        alert(`Save failed: ${resp.status} ${text}`);
+                    } else {
+                        alert('Saved successfully');
+                    }
+                } catch (err) {
+                    console.error('Error saving:', err);
+                    alert('Error saving changes');
+                }
+            });
         }
-      });
-    }
     } catch (err) {
         console.error('Error loading calculator:', err);
     }

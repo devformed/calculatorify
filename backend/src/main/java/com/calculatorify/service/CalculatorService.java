@@ -98,34 +98,41 @@ public class CalculatorService {
 		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId)).orElseThrow();
 
 		String prompt = context.getRequestParam("query");
+		String aiBaseUrl = System.getenv().getOrDefault("BACKEND_AI_URL", "http://localhost:8000");
+		Map<String, String> bodyMap = Map.of("message", prompt);
+		String jsonBody = Json.toJsonSneaky(bodyMap);
 		HttpRequest httpRequest = HttpRequest.newBuilder()
-				.uri(new URI("http://localhost:8000/chat"))
+				.uri(URI.create(aiBaseUrl + "/chat"))
 				.header(HttpHeaders.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_APPLICATION_JSON)
-				.POST(HttpRequest.BodyPublishers.ofString(prompt))
+				.POST(HttpRequest.BodyPublishers.ofString(jsonBody))
 				.build();
-
-		try (HttpClient client = HttpClient.newHttpClient()) {
-			int failures = 0;
-			while (true) {
-				java.net.http.HttpResponse<String> response = client.send(httpRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
-				try {
-					JsonNode node = Json.readTree(response.body());
-					String title = node.get("title").textValue();
-					String description = node.get("description").textValue();
-					CalculatorConfig config = Json.toValue(node.get("config"), CalculatorConfig.class);
-					return HttpResponse.ok(CalculatorEntry.builder()
-							.title(title)
-							.description(description)
-							.config(config)
-							.createdAt(Instant.now())
-							.updatedAt(Instant.now())
-							.userId(sessionEntry.getUserId())
-							.build());
-				} catch (Exception e) {
-					failures++;
-					if (failures >= 3) {
-						throw new HttpHandlerException(500, "Failed to get a valid response from backend-ai after 3 attempts");
-					}
+		HttpClient client = HttpClient.newHttpClient();
+		int failures = 0;
+		while (true) {
+			java.net.http.HttpResponse<String> response = client.send(
+					httpRequest,
+					java.net.http.HttpResponse.BodyHandlers.ofString()
+			);
+			try {
+				JsonNode node = Json.readTree(response.body());
+				String title = node.get("title").textValue();
+				String description = node.get("description").textValue();
+				CalculatorConfig config = Json.toValue(node.get("config"), CalculatorConfig.class);
+				return HttpResponse.ok(CalculatorEntry.builder()
+						.title(title)
+						.description(description)
+						.config(config)
+						.createdAt(Instant.now())
+						.updatedAt(Instant.now())
+						.userId(sessionEntry.getUserId())
+						.build());
+			} catch (Exception e) {
+				failures++;
+				if (failures >= 3) {
+					throw new HttpHandlerException(
+							500,
+							"Failed to get a valid response from backend-ai after 3 attempts"
+					);
 				}
 			}
 		}
