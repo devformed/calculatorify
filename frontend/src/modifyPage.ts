@@ -564,7 +564,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (!outEl) return;
                     try {
                         const result = evaluatePostfix(tokens, vars);
-                        (outEl as HTMLElement).textContent = String(result);
+                        // Apply configured precision for output if present
+                        const outConfig = card.config.outputs.find(o => o.name === name);
+                        const text = outConfig && typeof outConfig.precision === 'number'
+                            ? result.toFixed(outConfig.precision)
+                            : String(result);
+                        (outEl as HTMLElement).textContent = text;
                     } catch (err) {
                         (outEl as HTMLElement).textContent = '#ERROR';
                     }
