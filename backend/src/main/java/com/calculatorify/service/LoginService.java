@@ -39,10 +39,18 @@ public class LoginService {
 			throw new HttpHandlerException(401, "Unauthorized: Invalid username or password");
 		}
 		String sessionId = sessionManager.createSession(user.getId());
-		exchange.getResponseHeaders().add(
-				"Set-Cookie",
-				"SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
-		);
+        // Build session cookie, allowing disabling Secure flag via env var SESSION_COOKIE_SECURE=false
+        boolean secure = System.getenv("SESSION_COOKIE_SECURE") == null
+                || !System.getenv("SESSION_COOKIE_SECURE").equalsIgnoreCase("false");
+        StringBuilder cookie = new StringBuilder();
+        cookie.append("SESSIONID=").append(sessionId);
+        cookie.append("; Path=/");
+        cookie.append("; HttpOnly");
+        cookie.append("; SameSite=None");
+        if (secure) {
+            cookie.append("; Secure");
+        }
+        exchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
 		return HttpResponse.ok();
 	}
 
@@ -56,10 +64,18 @@ public class LoginService {
 
 		UUID userId = userRepository.persist(new UserDto(auth.username(), hash, Set.of(Role.USER)));
 		String sessionId = sessionManager.createSession(userId);
-		exchange.getResponseHeaders().add(
-				"Set-Cookie",
-				"SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
-		);
+        // Build session cookie, allowing disabling Secure flag via env var SESSION_COOKIE_SECURE=false
+        boolean secureReg = System.getenv("SESSION_COOKIE_SECURE") == null
+                || !System.getenv("SESSION_COOKIE_SECURE").equalsIgnoreCase("false");
+        StringBuilder cookieReg = new StringBuilder();
+        cookieReg.append("SESSIONID=").append(sessionId);
+        cookieReg.append("; Path=/");
+        cookieReg.append("; HttpOnly");
+        cookieReg.append("; SameSite=None");
+        if (secureReg) {
+            cookieReg.append("; Secure");
+        }
+        exchange.getResponseHeaders().add("Set-Cookie", cookieReg.toString());
 		return HttpResponse.ok(userId);
 	}
 

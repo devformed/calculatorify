@@ -6,9 +6,6 @@ interface SliderInput {
     minValue: number;
     maxValue: number;
     step: number;
-    /**
-     * Display order for rendering inputs
-     */
     order: number;
 }
 
@@ -18,9 +15,6 @@ interface NumberInput {
     name: string;
     number: number;
     precision: number;
-    /**
-     * Display order for rendering inputs
-     */
     order: number;
 }
 
@@ -29,9 +23,6 @@ interface RadioButtonsInput {
     id: string;
     name: string;
     nameValueOptions: Record<string, number>;
-    /**
-     * Display order for rendering inputs
-     */
     order: number;
 }
 
@@ -109,35 +100,35 @@ async function onInputChanged(aiInput: HTMLInputElement) {
                     .forEach((input) => {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'dashboard-card-input';
-        if (input.type === 'SLIDER') {
-          const sliderInput = input as SliderInput;
-          const valueSpan = document.createElement('span');
-          // create range input
-          const range = document.createElement('input');
-          range.type = 'range';
-          range.id = `${id}-${sliderInput.id}`;
-          range.min = String(sliderInput.minValue);
-          range.max = String(sliderInput.maxValue);
-          range.step = String(sliderInput.step);
-          // compute a random initial value aligned to step
-          const min = sliderInput.minValue;
-          const max = sliderInput.maxValue;
-          const step = sliderInput.step;
-          const stepsCount = Math.floor((max - min) / step);
-          const randomStep = Math.floor(Math.random() * (stepsCount + 1));
-          const initialValue = min + randomStep * step;
-          range.value = String(initialValue);
-          valueSpan.textContent = String(initialValue);
-          // label with live value
-          const label = document.createElement('label');
-          label.htmlFor = range.id;
-          label.textContent = `${sliderInput.name}: `;
-          label.append(valueSpan);
-          range.addEventListener('input', () => {
-            valueSpan.textContent = range.value;
-          });
-          wrapper.append(label, range);
-        } else if (input.type === 'NUMBER') {
+                        if (input.type === 'SLIDER') {
+                            const sliderInput = input as SliderInput;
+                            const valueSpan = document.createElement('span');
+                            // create range input
+                            const range = document.createElement('input');
+                            range.type = 'range';
+                            range.id = `${id}-${sliderInput.id}`;
+                            range.min = String(sliderInput.minValue);
+                            range.max = String(sliderInput.maxValue);
+                            range.step = String(sliderInput.step);
+                            // compute a random initial value aligned to step
+                            const min = sliderInput.minValue;
+                            const max = sliderInput.maxValue;
+                            const step = sliderInput.step;
+                            const stepsCount = Math.floor((max - min) / step);
+                            const randomStep = Math.floor(Math.random() * (stepsCount + 1));
+                            const initialValue = min + randomStep * step;
+                            range.value = String(initialValue);
+                            valueSpan.textContent = String(initialValue);
+                            // label with live value
+                            const label = document.createElement('label');
+                            label.htmlFor = range.id;
+                            label.textContent = `${sliderInput.name}: `;
+                            label.append(valueSpan);
+                            range.addEventListener('input', () => {
+                                valueSpan.textContent = range.value;
+                            });
+                            wrapper.append(label, range);
+                        } else if (input.type === 'NUMBER') {
                             const numberInput = input as NumberInput;
                             const label = document.createElement('label');
                             label.htmlFor = `${id}-${numberInput.id}`;
@@ -197,10 +188,10 @@ async function onInputChanged(aiInput: HTMLInputElement) {
             const btn = document.createElement('button');
             btn.className = 'btn btn-primary';
             btn.textContent = 'Calculate';
-          btn.addEventListener('click', () => {
-            // Navigate to modify page for this calculator
-            window.location.href = `modify.html?id=${id}`;
-          });
+            btn.addEventListener('click', () => {
+                // Navigate to modify page for this calculator
+                window.location.href = `modify.html?id=${id}`;
+            });
             cardEl.append(btn);
             container.append(cardEl);
         });
