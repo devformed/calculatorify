@@ -41,8 +41,7 @@ public final class Json {
 		return MAPPER.readTree(json);
 	}
 
-	@SneakyThrows
-	public static JsonNode readTreeSneaky(String json) {
-		return readTree(json);
+	public static <T> T toValue(JsonNode node, Class<T> clazz) throws JsonProcessingException {
+		return MAPPER.treeToValue(node, clazz);
 	}
 }
