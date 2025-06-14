@@ -82,29 +82,52 @@ document.addEventListener('DOMContentLoaded', async () => {
           wrapper.className = 'dashboard-card-input';
           if (input.type === 'SLIDER') {
             const slider = input as SliderInput;
-            // Slider element
             const min = slider.minValue;
             const max = slider.maxValue;
             const step = slider.step;
-            const stepsCount = Math.floor((max - min) / step);
-            const randomStep = Math.floor(Math.random() * (stepsCount + 1));
-            const initVal = min + randomStep * step;
-            const range = document.createElement('input');
-            range.type = 'range';
-            range.id = `${card.id}-${slider.id}`;
-            range.min = String(min);
-            range.max = String(max);
-            range.step = String(step);
-            range.value = String(initVal);
-            // Label with static range display
+            // Label with editable range text
+            const label = document.createElement('label');
+            label.htmlFor = `${card.id}-${slider.id}`;
+            label.className = 'modify-slider-label';
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = slider.name;
             const rangeSpan = document.createElement('span');
             rangeSpan.className = 'slider-range-text';
             rangeSpan.textContent = `${min} - ${max}`;
-            const label = document.createElement('label');
-            label.htmlFor = range.id;
-            label.textContent = `${slider.name}: `;
-            label.append(rangeSpan);
-            wrapper.append(label, range);
+            rangeSpan.style.cursor = 'pointer';
+            rangeSpan.addEventListener('dblclick', () => {
+              rangeSpan.contentEditable = 'true';
+              rangeSpan.focus();
+            });
+            rangeSpan.addEventListener('blur', () => {
+              rangeSpan.contentEditable = 'false';
+              const parts = rangeSpan.textContent?.split('-') || [];
+              const newMin = parseFloat(parts[0]?.trim() || '');
+              const newMax = parseFloat(parts[1]?.trim() || '');
+              if (!isNaN(newMin)) rangeInput.min = String(newMin);
+              if (!isNaN(newMax)) rangeInput.max = String(newMax);
+            });
+            rangeSpan.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                rangeSpan.blur();
+              }
+            });
+            label.append(nameSpan, rangeSpan);
+            wrapper.append(label);
+            // Slider input
+            const rangeInput = document.createElement('input');
+            rangeInput.type = 'range';
+            rangeInput.id = `${card.id}-${slider.id}`;
+            rangeInput.min = String(min);
+            rangeInput.max = String(max);
+            rangeInput.step = String(step);
+            // Random initial value
+            const stepsCount = Math.floor((max - min) / step);
+            const randomStep = Math.floor(Math.random() * (stepsCount + 1));
+            const initVal = min + randomStep * step;
+            rangeInput.value = String(initVal);
+            wrapper.append(rangeInput);
           } else if (input.type === 'NUMBER') {
             const numIn = input as NumberInput;
             const label = document.createElement('label');

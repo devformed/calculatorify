@@ -1,7 +1,13 @@
 @use 'variables' as *;
 @use 'layout' as *;
-
-// Actions section
+// Slider label layout: name on left, range text on right
+.modify-slider-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  color: $color-text;
+}
 .modify-actions {
   text-align: right;
   margin-top: 1rem;
@@ -52,6 +58,37 @@
   padding-top: 1rem;
 }
 // Range text next to slider label
+.slider-range-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.slider-name {
+  font-size: 1rem;
+  font-family: $font-sans;
+  color: $color-text;
+}
+.slider-mod-min,
+.slider-mod-max {
+  width: 4rem;
+  padding: 0.5rem;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-size: 1rem;
+  font-family: $font-sans;
+  color: $color-text;
+}
+.slider-range-dash {
+  font-size: 1rem;
+  color: $color-text;
+}
+.slider-current-value {
+  margin-left: 0.75rem;
+  font-size: 1rem;
+  font-family: $font-sans;
+  color: $color-text;
+}
 .slider-range-text {
   margin-left: 0.5rem;
   color: $color-text-secondary;
