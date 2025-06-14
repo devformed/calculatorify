@@ -79,9 +79,8 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 		Connection conn = TransactionContext.getConnection();
 		try (PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_USER_ID_AND_CALC_ID)) {
 			ps.setObject(1, userId, Types.OTHER);
-			ps.setObject(1, calculatorId, Types.OTHER);
+			ps.setObject(2, calculatorId, Types.OTHER);
 			ResultSet rs = ps.executeQuery();
-			var list = new ArrayList<HistoryEntry>();
 			if (!rs.next()) {
 				return Optional.empty();
 			}

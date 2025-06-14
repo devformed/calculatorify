@@ -323,228 +323,224 @@ document.addEventListener('DOMContentLoaded', async () => {
                 descriptionEl.blur();
             }
         });
-        // Inputs section
-        if (card.config.inputs && card.config.inputs.length) {
-            const inpLabel = document.createElement('div');
-            inpLabel.className = 'dashboard-card-inputs-label';
-            inpLabel.textContent = 'Input';
-            inputsContainer.append(inpLabel);
-            [...card.config.inputs]
-                .sort((a, b) => a.order - b.order)
-                .forEach(input => {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'dashboard-card-input';
-                    if (input.type === 'SLIDER') {
-                        const slider = input as SliderInput;
-                        const min = slider.minValue;
-                        const max = slider.maxValue;
-                        const step = slider.step;
-                        // Label with editable min and max fields
-                        const label = document.createElement('label');
-                        label.htmlFor = `${card.id}-${slider.id}`;
-                        label.className = 'modify-slider-label';
-                        // Create label with name and range group
-                        const nameSpan = document.createElement('span');
-                        nameSpan.textContent = slider.name;
-                        // inline edit input label
-                        nameSpan.style.cursor = 'pointer';
-                        nameSpan.addEventListener('click', () => {
-                            nameSpan.contentEditable = 'true';
-                            nameSpan.focus();
-                        });
-                        nameSpan.addEventListener('blur', () => {
-                            nameSpan.contentEditable = 'false';
-                            slider.name = nameSpan.textContent || slider.name;
-                        });
-                        nameSpan.addEventListener('keydown', e => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                nameSpan.blur();
-                            }
-                        });
-                        const minSpan = document.createElement('span');
-                        minSpan.className = 'slider-range-min';
-                        minSpan.textContent = String(min);
-                        const dashSpan = document.createElement('span');
-                        dashSpan.className = 'slider-range-dash';
-                        dashSpan.textContent = '-';
-                        const maxSpan = document.createElement('span');
-                        maxSpan.className = 'slider-range-max';
-                        maxSpan.textContent = String(max);
-                        // Wrap min-dash-max in a group for correct alignment
-                        const rangeGroup = document.createElement('span');
-                        rangeGroup.className = 'slider-range-group';
-                        rangeGroup.append(minSpan, dashSpan, maxSpan);
-                        // Make min/max editable on click
-                        [minSpan, maxSpan].forEach(span => {
-                            span.style.cursor = 'pointer';
-                            span.addEventListener('click', () => {
-                                span.contentEditable = 'true';
-                                span.focus();
+        // prepare postfix map and rendering functions
+        let postfixMap: Record<string, Array<{ type: string; value: string }>>;
+
+        function buildInputs() {
+            inputsContainer.innerHTML = '';
+            if (card.config.inputs && card.config.inputs.length) {
+                const inpLabel = document.createElement('div');
+                inpLabel.className = 'dashboard-card-inputs-label';
+                inpLabel.textContent = 'Input';
+                inputsContainer.append(inpLabel);
+                [...card.config.inputs]
+                    .sort((a, b) => a.order - b.order)
+                    .forEach(input => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'dashboard-card-input';
+                        if (input.type === 'SLIDER') {
+                            const slider = input as SliderInput;
+                            const min = slider.minValue;
+                            const max = slider.maxValue;
+                            const step = slider.step;
+                            const label = document.createElement('label');
+                            label.htmlFor = `${card.id}-${slider.id}`;
+                            label.className = 'modify-slider-label';
+                            const nameSpan = document.createElement('span');
+                            nameSpan.textContent = slider.name;
+                            nameSpan.style.cursor = 'pointer';
+                            nameSpan.addEventListener('click', () => {
+                                nameSpan.contentEditable = 'true';
+                                nameSpan.focus();
                             });
-                            span.addEventListener('blur', () => {
-                                span.contentEditable = 'false';
-                                const parts = span.textContent?.trim();
-                                const val = parseFloat(parts || '');
-                                if (!isNaN(val)) {
-                                    span.textContent = String(val);
-                                    if (span === minSpan) rangeInput.min = span.textContent;
-                                    else rangeInput.max = span.textContent;
-                                }
+                            nameSpan.addEventListener('blur', () => {
+                                nameSpan.contentEditable = 'false';
+                                slider.name = nameSpan.textContent || slider.name;
                             });
-                            span.addEventListener('keydown', e => {
+                            nameSpan.addEventListener('keydown', e => {
                                 if (e.key === 'Enter') {
                                     e.preventDefault();
-                                    span.blur();
+                                    nameSpan.blur();
                                 }
                             });
-                        });
-                        label.append(nameSpan, rangeGroup);
-                        wrapper.append(label);
-                        // Slider input
-                        const rangeInput = document.createElement('input');
-                        rangeInput.type = 'range';
-                        rangeInput.id = `${card.id}-${slider.id}`;
-                        rangeInput.min = String(min);
-                        rangeInput.max = String(max);
-                        rangeInput.step = String(step);
-                        // Random initial value
-                        const stepsCount = Math.floor((max - min) / step);
-                        const randomStep = Math.floor(Math.random() * (stepsCount + 1));
-                        const initVal = min + randomStep * step;
-                        rangeInput.value = String(initVal);
-                        // Slider and current value row
-                        const sliderRow = document.createElement('div');
-                        sliderRow.className = 'modify-slider-row';
-                        sliderRow.append(rangeInput);
-                        // Display current slider value
-                        const valueSpan = document.createElement('span');
-                        valueSpan.className = 'slider-value';
-                        valueSpan.textContent = rangeInput.value;
-                        sliderRow.append(valueSpan);
-                        wrapper.append(sliderRow);
-                        // Update on input
-                        rangeInput.addEventListener('input', () => {
+                            const minSpan = document.createElement('span');
+                            minSpan.className = 'slider-range-min';
+                            minSpan.textContent = String(min);
+                            const dashSpan = document.createElement('span');
+                            dashSpan.className = 'slider-range-dash';
+                            dashSpan.textContent = '-';
+                            const maxSpan = document.createElement('span');
+                            maxSpan.className = 'slider-range-max';
+                            maxSpan.textContent = String(max);
+                            const rangeGroup = document.createElement('span');
+                            rangeGroup.className = 'slider-range-group';
+                            rangeGroup.append(minSpan, dashSpan, maxSpan);
+                            [minSpan, maxSpan].forEach(span => {
+                                span.style.cursor = 'pointer';
+                                span.addEventListener('click', () => {
+                                    span.contentEditable = 'true';
+                                    span.focus();
+                                });
+                                span.addEventListener('blur', () => {
+                                    span.contentEditable = 'false';
+                                    const parts = span.textContent?.trim();
+                                    const val = parseFloat(parts || '');
+                                    if (!isNaN(val)) {
+                                        span.textContent = String(val);
+                                        if (span === minSpan) rangeInput.min = span.textContent;
+                                        else rangeInput.max = span.textContent;
+                                    }
+                                });
+                                span.addEventListener('keydown', e => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        span.blur();
+                                    }
+                                });
+                            });
+                            label.append(nameSpan, rangeGroup);
+                            wrapper.append(label);
+                            const rangeInput = document.createElement('input');
+                            rangeInput.type = 'range';
+                            rangeInput.id = `${card.id}-${slider.id}`;
+                            rangeInput.min = String(min);
+                            rangeInput.max = String(max);
+                            rangeInput.step = String(step);
+                            const stepsCount = Math.floor((max - min) / step);
+                            const randomStep = Math.floor(Math.random() * (stepsCount + 1));
+                            const initVal = min + randomStep * step;
+                            rangeInput.value = String(initVal);
+                            const sliderRow = document.createElement('div');
+                            sliderRow.className = 'modify-slider-row';
+                            sliderRow.append(rangeInput);
+                            const valueSpan = document.createElement('span');
+                            valueSpan.className = 'slider-value';
                             valueSpan.textContent = rangeInput.value;
-                        });
-                    } else if (input.type === 'NUMBER') {
-                        const numIn = input as NumberInput;
-                        const label = document.createElement('label');
-                        label.htmlFor = `${card.id}-${numIn.id}`;
-                        const nameSpan2 = document.createElement('span');
-                        nameSpan2.textContent = numIn.name;
-                        nameSpan2.style.cursor = 'pointer';
-                        nameSpan2.addEventListener('click', () => {
-                            nameSpan2.contentEditable = 'true';
-                            nameSpan2.focus();
-                        });
-                        nameSpan2.addEventListener('blur', () => {
-                            nameSpan2.contentEditable = 'false';
-                            numIn.name = nameSpan2.textContent || numIn.name;
-                        });
-                        nameSpan2.addEventListener('keydown', e => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                nameSpan2.blur();
-                            }
-                        });
-                        label.textContent = '';
-                        label.append(nameSpan2);
-                        const numEl = document.createElement('input');
-                        numEl.type = 'number';
-                        numEl.id = `${card.id}-${numIn.id}`;
-                        numEl.value = String(numIn.number);
-                        numEl.step = String(1 / Math.pow(10, numIn.precision));
-                        wrapper.append(label, numEl);
-                    } else if (input.type === 'RADIO_BUTTONS') {
-                        const rad = input as RadioButtonsInput;
-                        const fieldset = document.createElement('fieldset');
-                        const legend = document.createElement('legend');
-                        const legendSpan = document.createElement('span');
-                        legendSpan.textContent = rad.name;
-                        legendSpan.style.cursor = 'pointer';
-                        legendSpan.addEventListener('click', () => {
-                            legendSpan.contentEditable = 'true';
-                            legendSpan.focus();
-                        });
-                        legendSpan.addEventListener('blur', () => {
-                            legendSpan.contentEditable = 'false';
-                            rad.name = legendSpan.textContent || rad.name;
-                        });
-                        legendSpan.addEventListener('keydown', e => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                legendSpan.blur();
-                            }
-                        });
-                        legend.textContent = '';
-                        legend.append(legendSpan);
-                        fieldset.append(legend);
-                        Object.entries(rad.nameValueOptions).forEach(([optName, optVal], idx) => {
-                            const optionId = `${card.id}-${rad.id}-${idx}`;
-                            const radio = document.createElement('input');
-                            radio.type = 'radio';
-                            radio.name = `${card.id}-${rad.id}`;
-                            radio.id = optionId;
-                            radio.value = String(optVal);
-                            if (idx === 0) radio.checked = true;
-                            const lab = document.createElement('label');
-                            lab.htmlFor = optionId;
-                            lab.textContent = optName;
-                            fieldset.append(radio, lab);
-                        });
-                        wrapper.append(fieldset);
-                    }
-                    inputsContainer.append(wrapper);
-                });
-        }
-        // Outputs section
-        // Keep track of postfix formulas for each output name
-        const postfixMap: Record<string, Array<{ type: string; value: string }>> =
-            (card as any).outputNameToPostfixFormula;
-        if (postfixMap && Object.keys(postfixMap).length) {
-            const sep = document.createElement('div');
-            sep.className = 'dashboard-card-outcome-label';
-            sep.textContent = 'Outcome';
-            outputsContainer.append(sep);
-            Object.keys(postfixMap)
-                .sort((a, b) => {
-                    const oa = card.config.outputs.find(o => o.name === a)!;
-                    const ob = card.config.outputs.find(o => o.name === b)!;
-                    return oa.order - ob.order;
-                })
-                .forEach(name => {
-                    const outEl = document.createElement('div');
-                    outEl.className = 'dashboard-card-output';
-                    outEl.setAttribute('data-output-name', name);
-                    const labelEl = document.createElement('span');
-                    labelEl.className = 'dashboard-card-output-label';
-                    labelEl.textContent = name;
-                    // inline edit output name
-                    labelEl.style.cursor = 'pointer';
-                    const outObj = card.config.outputs.find(o => o.name === name)!;
-                    labelEl.addEventListener('click', () => {
-                        labelEl.contentEditable = 'true';
-                        labelEl.focus();
-                    });
-                    labelEl.addEventListener('blur', () => {
-                        labelEl.contentEditable = 'false';
-                        outObj.name = labelEl.textContent || outObj.name;
-                    });
-                    labelEl.addEventListener('keydown', e => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            labelEl.blur();
+                            sliderRow.append(valueSpan);
+                            wrapper.append(sliderRow);
+                            rangeInput.addEventListener('input', () => {
+                                valueSpan.textContent = rangeInput.value;
+                            });
+                        } else if (input.type === 'NUMBER') {
+                            const numIn = input as NumberInput;
+                            const label = document.createElement('label');
+                            label.htmlFor = `${card.id}-${numIn.id}`;
+                            const nameSpan2 = document.createElement('span');
+                            nameSpan2.textContent = numIn.name;
+                            nameSpan2.style.cursor = 'pointer';
+                            nameSpan2.addEventListener('click', () => {
+                                nameSpan2.contentEditable = 'true';
+                                nameSpan2.focus();
+                            });
+                            nameSpan2.addEventListener('blur', () => {
+                                nameSpan2.contentEditable = 'false';
+                                numIn.name = nameSpan2.textContent || numIn.name;
+                            });
+                            nameSpan2.addEventListener('keydown', e => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    nameSpan2.blur();
+                                }
+                            });
+                            label.append(nameSpan2);
+                            const numEl = document.createElement('input');
+                            numEl.type = 'number';
+                            numEl.id = `${card.id}-${numIn.id}`;
+                            numEl.value = String(numIn.number);
+                            numEl.step = String(1 / Math.pow(10, numIn.precision));
+                            wrapper.append(label, numEl);
+                        } else if (input.type === 'RADIO_BUTTONS') {
+                            const rad = input as RadioButtonsInput;
+                            const fieldset = document.createElement('fieldset');
+                            const legend = document.createElement('legend');
+                            const legendSpan = document.createElement('span');
+                            legendSpan.textContent = rad.name;
+                            legendSpan.style.cursor = 'pointer';
+                            legendSpan.addEventListener('click', () => {
+                                legendSpan.contentEditable = 'true';
+                                legendSpan.focus();
+                            });
+                            legendSpan.addEventListener('blur', () => {
+                                legendSpan.contentEditable = 'false';
+                                rad.name = legendSpan.textContent || rad.name;
+                            });
+                            legendSpan.addEventListener('keydown', e => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    legendSpan.blur();
+                                }
+                            });
+                            legend.append(legendSpan);
+                            fieldset.append(legend);
+                            Object.entries(rad.nameValueOptions).forEach(([optName, optVal], idx) => {
+                                const optionId = `${card.id}-${rad.id}-${idx}`;
+                                const radio = document.createElement('input');
+                                radio.type = 'radio';
+                                radio.name = `${card.id}-${rad.id}`;
+                                radio.id = optionId;
+                                radio.value = String(optVal);
+                                if (idx === 0) radio.checked = true;
+                                const lab = document.createElement('label');
+                                lab.htmlFor = optionId;
+                                lab.textContent = optName;
+                                fieldset.append(radio, lab);
+                            });
+                            wrapper.append(fieldset);
                         }
+                        inputsContainer.append(wrapper);
                     });
-                    const valueEl = document.createElement('span');
-                    valueEl.className = 'dashboard-card-output-value';
-                    valueEl.textContent = ''; // will be computed
-                    outEl.append(labelEl, valueEl);
-                    outputsContainer.append(outEl);
-                });
+            }
         }
-        // Description
+
+        function buildOutputs() {
+            outputsContainer.innerHTML = '';
+            postfixMap = (card as any).outputNameToPostfixFormula;
+            if (postfixMap && Object.keys(postfixMap).length) {
+                const sep = document.createElement('div');
+                sep.className = 'dashboard-card-outcome-label';
+                sep.textContent = 'Outcome';
+                outputsContainer.append(sep);
+                Object.keys(postfixMap)
+                    .sort((a, b) => {
+                        const oa = card.config.outputs.find(o => o.name === a)!;
+                        const ob = card.config.outputs.find(o => o.name === b)!;
+                        return oa.order - ob.order;
+                    })
+                    .forEach(name => {
+                        const outEl = document.createElement('div');
+                        outEl.className = 'dashboard-card-output';
+                        outEl.setAttribute('data-output-name', name);
+                        const labelEl = document.createElement('span');
+                        labelEl.className = 'dashboard-card-output-label';
+                        labelEl.textContent = name;
+                        labelEl.style.cursor = 'pointer';
+                        const outObj = card.config.outputs.find(o => o.name === name)!;
+                        labelEl.addEventListener('click', () => {
+                            labelEl.contentEditable = 'true';
+                            labelEl.focus();
+                        });
+                        labelEl.addEventListener('blur', () => {
+                            labelEl.contentEditable = 'false';
+                            outObj.name = labelEl.textContent || outObj.name;
+                        });
+                        labelEl.addEventListener('keydown', e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                labelEl.blur();
+                            }
+                        });
+                        const valueEl = document.createElement('span');
+                        valueEl.className = 'dashboard-card-output-value';
+                        valueEl.textContent = '';
+                        outEl.append(labelEl, valueEl);
+                        outputsContainer.append(outEl);
+                    });
+            }
+        }
+
+        // initial UI render
+        buildInputs();
+        buildOutputs();
         descriptionEl.textContent = card.description || '';
 
         // Function to compute all outputs
@@ -683,7 +679,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 try {
                     const aiCard = await respAI.json() as CalculatorEntry;
                     console.log('AI modified card:', aiCard);
-                    // NOTE: UI update required to reflect aiCard (e.g., rebuild inputs/outputs)
+                    // apply AI modifications to UI
+                    card = aiCard;
+                    titleEl.textContent = card.title;
+                    descriptionEl.textContent = card.description || '';
+                    // rebuild inputs and outputs
+                    buildInputs();
+                    buildOutputs();
+                    // recompute outputs and reattach listeners
+                    computeOutputs();
+                    card.config.inputs.forEach(inp => {
+                        const el = document.getElementById(`${card.id}-${inp.id}`);
+                        if (el) el.addEventListener('input', computeOutputs);
+                    });
                 } catch (e) {
                     console.error('Failed parsing AI response', e);
                     alert('Invalid AI response');
