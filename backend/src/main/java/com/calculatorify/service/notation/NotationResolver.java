@@ -72,6 +72,7 @@ public final class NotationResolver {
 			case "*" -> addNumber(stack, left * right);
 			case "/" -> addNumber(stack, left / right);
 			case "^" -> addNumber(stack, Math.pow(left, right));
+			case "%" -> addNumber(stack, left % right);
 			default -> throw new UnsupportedOperationException("Unsupported operator: " + token.value());
 		}
 	}

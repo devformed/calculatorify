@@ -30,9 +30,11 @@ function evaluatePostfix(tokens: Token[], variableMap: Record<string, string>): 
                 break;
             }
             case 'OPERATOR': {
-                const b = stack.pop();
-                const a = stack.pop();
-                if (a === undefined || b === undefined) throw new Error('Insufficient operands');
+                let b = stack.pop();
+                let a = stack.pop();
+                if (b === undefined) throw new Error('Insufficient operands');
+                // handle unary operators: if no left operand, treat a as 0
+                if (a === undefined) a = 0;
                 let res: number;
                 switch (token.value) {
                     case '+':
@@ -49,6 +51,9 @@ function evaluatePostfix(tokens: Token[], variableMap: Record<string, string>): 
                         break;
                     case '^':
                         res = Math.pow(a, b);
+                        break;
+                    case '%':
+                        res = a % b;
                         break;
                     default:
                         throw new Error('Unsupported operator ' + token.value);

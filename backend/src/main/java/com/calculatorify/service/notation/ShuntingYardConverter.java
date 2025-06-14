@@ -18,10 +18,24 @@ import static com.calculatorify.util.Collects.mapList;
 public final class ShuntingYardConverter {
 
 	public static List<Token> toPostfix(List<Token> infix) {
+		// Pre-process unary minus: insert 0 before unary '-' tokens
+		List<Token> tokens = new ArrayList<>();
+		for (int i = 0; i < infix.size(); i++) {
+			Token t = infix.get(i);
+			if (t.type() == TokenType.OPERATOR && "-".equals(t.value())
+				&& (i == 0
+					|| infix.get(i - 1).type() == TokenType.OPERATOR
+					|| infix.get(i - 1).type() == TokenType.LEFT_PAREN
+					|| infix.get(i - 1).type() == TokenType.COMMA)) {
+				// treat unary minus as binary by prepending 0
+				tokens.add(new Token(TokenType.DECIMAL_LITERAL, "0"));
+			}
+			tokens.add(t);
+		}
 		List<Token> output = new ArrayList<>();
 		Deque<Token> stack = new ArrayDeque<>();
-
-		infix.forEach(token -> handleToken(token, stack, output));
+		// Shunting-yard main loop on pre-processed tokens
+		tokens.forEach(token -> handleToken(token, stack, output));
 
 		while (!stack.isEmpty()) {
 			Token token = stack.pop();

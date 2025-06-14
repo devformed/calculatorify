@@ -14,58 +14,6 @@ INSERT INTO calculator_ (title_,
                          description_,
                          config_,
                          user_id_)
-VALUES ('Kalkulator kredytowy',
-        'Oblicza miesięczną ratę annuitetową oraz całkowity koszt odsetek',
-        $${
-          "inputs": [
-            {
-              "type": "SLIDER",
-              "id": "loan_amount",
-              "name": "Kwota kredytu (PLN)",
-              "minValue": 10000,
-              "maxValue": 500000,
-              "step": 1000,
-              "order": 1
-            },
-            {
-              "type": "NUMBER",
-              "id": "interest_rate",
-              "name": "Oprocentowanie roczne (%)",
-              "number": 3.5,
-              "precision": 2,
-              "order": 3
-            },
-            {
-              "type": "SLIDER",
-              "id": "term_years",
-              "name": "Okres spłaty (lata)",
-              "minValue": 1,
-              "maxValue": 30,
-              "step": 1,
-              "order": 2
-            }
-          ],
-          "outputs": [
-            {
-              "name": "Monthly Payment",
-              "formula": "ROUND_TO_N(( ${loan_amount} * (${interest_rate} / 1200)) / (1 - (1 + (${interest_rate} / 1200)) ^ (- ${term_years} * 12)), 2)",
-              "precision": 2,
-              "order": 1
-            },
-            {
-              "name": "Total Interest",
-              "formula": "ROUND_TO_N(${loan_amount} * (${interest_rate} / 1200) * ${term_years} * 12 - ${loan_amount}, 2)",
-              "precision": 2,
-              "order": 2
-            }
-          ]
-        }$$::jsonb,
-        '00000000-0000-0000-0000-000000000000');
-
-INSERT INTO calculator_ (title_,
-                         description_,
-                         config_,
-                         user_id_)
 VALUES ('BMI Calculator',
         'Oblicza wskaźnik masy ciała (BMI)',
         $${
@@ -92,6 +40,50 @@ VALUES ('BMI Calculator',
               "name": "Wskaźnik masy ciała (BMI)",
               "formula": "ROUND_TO_N(${weight} / POW(${height} / 100, 2), 1)",
               "precision": 1,
+              "order": 1
+            }
+          ]
+        }$$::jsonb,
+        '00000000-0000-0000-0000-000000000000');
+
+INSERT INTO calculator_ (title_,
+                         description_,
+                         config_,
+                         user_id_)
+VALUES ('Kalkulator Kredytowy',
+        'Oblicza miesięczną ratę kredytu na podstawie kwoty, oprocentowania i okresu spłaty.',
+        $${
+          "inputs": [
+            {
+              "type": "NUMBER",
+              "id": "loan_amount",
+              "name": "Kwota kredytu (PLN)",
+              "order": 1,
+              "number": 300000,
+              "precision": 2
+            },
+            {
+              "type": "NUMBER",
+              "id": "interest_rate",
+              "name": "Oprocentowanie roczne (%)",
+              "order": 2,
+              "number": 8,
+              "precision": 2
+            },
+            {
+              "type": "NUMBER",
+              "id": "years",
+              "name": "Okres (lata)",
+              "order": 3,
+              "number": 30,
+              "precision": 0
+            }
+          ],
+          "outputs": [
+            {
+              "name": "Rata miesięczna",
+              "formula": "ROUND_TO_N(${loan_amount} * (${interest_rate} / 1200) / (1 - POW(1 + (${interest_rate} / 1200), -${years} * 12)), 2)",
+              "precision": 2,
               "order": 1
             }
           ]
