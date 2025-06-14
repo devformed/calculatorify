@@ -33,6 +33,11 @@
 .modify-outputs {
   flex: 1;
 }
+// Add vertical padding between individual inputs and outputs
+.modify-inputs .dashboard-card-input,
+.modify-outputs .dashboard-card-output {
+  padding: 1rem 0;
+}
 
 // Vertical separator line between panels
 .modify-separator {
