@@ -249,7 +249,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const overlay = document.createElement('div');
         overlay.className = 'loader-overlay';
         overlay.innerHTML = '<div class="spinner"></div>';
-        document.body.append(overlay);
+        const container = document.getElementById('mainContent') || document.body;
+        container.append(overlay);
         return overlay;
     }
 
