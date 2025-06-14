@@ -660,6 +660,36 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
         }
+        // AI-driven modify: call construct with current config as reference
+        const aiInput = document.getElementById('aiPromptInput') as HTMLInputElement;
+        const aiSubmit = document.getElementById('aiSubmit') as HTMLButtonElement;
+        if (aiSubmit && aiInput) {
+            aiSubmit.addEventListener('click', async () => {
+                const newPrompt = aiInput.value.trim();
+                if (!newPrompt) return;
+                const loaderAI = showLoader();
+                const respAI = await fetch(`http://localhost:8080/calculators/construct`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({prompt: JSON.stringify(card) + '\n' + newPrompt})
+                });
+                loaderAI.remove();
+                if (!respAI.ok) {
+                    const txt = await respAI.text();
+                    alert(`AI modify failed: ${respAI.status} ${txt}`);
+                    return;
+                }
+                try {
+                    const aiCard = await respAI.json() as CalculatorEntry;
+                    console.log('AI modified card:', aiCard);
+                    // NOTE: UI update required to reflect aiCard (e.g., rebuild inputs/outputs)
+                } catch (e) {
+                    console.error('Failed parsing AI response', e);
+                    alert('Invalid AI response');
+                }
+            });
+        }
     } catch (err) {
         console.error('Error loading calculator:', err);
     }
