@@ -61,3 +61,32 @@ VALUES ('Kalkulator kredytowy',
           ]
         }$$::jsonb,
         '00000000-0000-0000-0000-000000000000');
+
+INSERT INTO calculator_ (title_,
+                         description_,
+                         config_,
+                         user_id_)
+VALUES ('Test test',
+        'Test test test test test test test',
+        $${
+          "inputs": [
+            {
+              "type": "SLIDER",
+              "id": "number",
+              "name": "Liczba",
+              "minValue": 1,
+              "maxValue": 10,
+              "step": 1,
+              "order": 1
+            }
+          ],
+          "outputs": [
+            {
+              "name": "Monthly Payment",
+              "formula": "(((1 + 5) / 7) - ${number}) * 3",
+              "precision": 2,
+              "order": 1
+            }
+          ]
+        }$$::jsonb,
+        '00000000-0000-0000-0000-000000000000');
