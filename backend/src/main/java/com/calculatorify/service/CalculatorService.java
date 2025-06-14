@@ -1,5 +1,6 @@
 package com.calculatorify.service;
 
+import com.calculatorify.controller.SessionManager;
 import com.calculatorify.exception.HttpHandlerException;
 import com.calculatorify.model.dto.calculator.CalculatorDto;
 import com.calculatorify.model.dto.calculator.CalculatorEnrichedEntry;
@@ -8,9 +9,9 @@ import com.calculatorify.model.dto.calculator.config.CalculatorConfig;
 import com.calculatorify.model.dto.calculator.config.CalculatorOutput;
 import com.calculatorify.model.dto.http.HttpPathContext;
 import com.calculatorify.model.dto.http.HttpResponse;
-import com.calculatorify.model.dto.session.SessionEntry;
+import com.calculatorify.model.dto.user.Role;
+import com.calculatorify.model.dto.user.UserEntry;
 import com.calculatorify.model.repository.calculator.CalculatorRepository;
-import com.calculatorify.model.repository.session.SessionRepository;
 import com.calculatorify.service.notation.ShuntingYardConverter;
 import com.calculatorify.service.notation.token.Token;
 import com.calculatorify.service.notation.token.Tokenizer;
@@ -39,7 +40,8 @@ import java.util.stream.Collectors;
 public class CalculatorService {
 
 	private final CalculatorRepository repository;
-	private final SessionRepository sessionRepository;
+	private final SessionManager sessionManager;
+	private final HistoryService historyService;
 
 	public HttpResponse getCalculators(HttpExchange exchange, HttpPathContext context) {
 		var fullText = context.getRequestParam("q");
@@ -49,7 +51,9 @@ public class CalculatorService {
 
 	public HttpResponse getCalculator(HttpExchange exchange, HttpPathContext context) {
 		UUID id = UUID.fromString(context.getPathVariable("id"));
-		var entry = repository.findById(id).orElseThrow();
+		CalculatorEntry entry = repository.findById(id).orElseThrow();
+
+		historyService.upsertHistory(sessionManager.getSessionUser(exchange).getId(), entry);
 		return HttpResponse.ok(toEnrichedEntry(entry));
 	}
 
@@ -58,11 +62,8 @@ public class CalculatorService {
 		CalculatorEntry existing = repository.findById(id).orElseThrow();
 
 		// authorize: only owner can update
-		String sessionId = HttpUtils.getSessionId(exchange)
-				.orElseThrow(() -> new HttpHandlerException(401, "Unauthorized"));
-		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId))
-				.orElseThrow(() -> new HttpHandlerException(401, "Invalid session"));
-		if (!sessionEntry.getUserId().equals(existing.getUserId())) {
+		UserEntry user = sessionManager.getSessionUser(exchange);
+		if (!user.getRoles().contains(Role.ADMIN) && !user.getId().equals(existing.getUserId())) {
 			throw new HttpHandlerException(403, "Only author can modify this calculator");
 		}
 
@@ -84,9 +85,8 @@ public class CalculatorService {
 				.orElseThrow(() -> new HttpHandlerException(404, "Calculator not found: %s".formatted(id)));
 
 		// authorize: only owner can delete
-		String sessionId = HttpUtils.getSessionId(exchange).orElseThrow();
-		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId)).orElseThrow();
-		if (!sessionEntry.getUserId().equals(existing.getUserId())) {
+		UserEntry user = sessionManager.getSessionUser(exchange);
+		if (!user.getRoles().contains(Role.ADMIN) && !user.getId().equals(existing.getUserId())) {
 			throw new HttpHandlerException(403, "Only author can delete this calculator");
 		}
 
@@ -95,27 +95,26 @@ public class CalculatorService {
 	}
 
 	public HttpResponse create(HttpExchange exchange, HttpPathContext context) throws Exception {
-		String sessionId = HttpUtils.getSessionId(exchange).orElseThrow();
-		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId)).orElseThrow();
+		UserEntry user = sessionManager.getSessionUser(exchange);
 
 		String body = HttpUtils.getRequestBody(exchange);
 		CalculatorDto dto = Json.fromJson(body, CalculatorDto.class);
 		dto.setCreatedAt(Instant.now());
 		dto.setUpdatedAt(Instant.now());
-		dto.setUserId(sessionEntry.getUserId());
+		dto.setUserId(user.getId());
 
 		UUID id = repository.persist(dto);
 		return HttpResponse.ok(id);
 	}
 
 	public HttpResponse construct(HttpExchange exchange, HttpPathContext context) throws Exception {
-        // read prompt from JSON request body instead of query param
-        String body = HttpUtils.getRequestBody(exchange);
-        JsonNode json = Json.readTree(body);
-        if (!json.has("prompt")) {
-            throw new HttpHandlerException(400, "Missing prompt in request body");
-        }
-        String prompt = json.get("prompt").asText();
+		// read prompt from JSON request body instead of query param
+		String body = HttpUtils.getRequestBody(exchange);
+		JsonNode json = Json.readTree(body);
+		if (!json.has("prompt")) {
+			throw new HttpHandlerException(400, "Missing prompt in request body");
+		}
+		String prompt = json.get("prompt").asText();
 
 		String aiBaseUrl = System.getenv().getOrDefault("BACKEND_AI_URL", "http://localhost:8000");
 		String systemMessage = System.getenv().getOrDefault("BACKEND_AI_SYSTEM_MESSAGE", LLM_SYSTEM_MSG);
