@@ -224,11 +224,15 @@ interface CalculatorConfig {
     outputs: CalculatorOutput[];
 }
 
+// Entry from GET /calculators/{id}, including metadata and postfix map
 interface CalculatorEntry {
-    id: string;
-    title: string;
-    description?: string;
-    config: CalculatorConfig;
+  id: string;
+  title: string;
+  description?: string;
+  config: CalculatorConfig;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -436,14 +440,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Attach listeners
-        // on load
-        computeOutputs();
-        // on input change
-        card.config.inputs.forEach(inp => {
-            const el = document.getElementById(`${card.id}-${inp.id}`);
-            if (el) el.addEventListener('input', computeOutputs);
-        });
+    // Attach listeners
+    computeOutputs();
+    // on input change, recompute outputs
+    card.config.inputs.forEach(inp => {
+      const el = document.getElementById(`${card.id}-${inp.id}`);
+      if (el) el.addEventListener('input', computeOutputs);
+    });
+    // Save changes button
+    const saveBtn = document.getElementById('saveChanges') as HTMLButtonElement;
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        try {
+          // Prepare updated fields
+          // Build full CalculatorDto payload
+          const payload = {
+            id: card.id,
+            title: card.title,
+            description: descriptionEl.textContent,
+            config: card.config,
+            createdAt: card.createdAt,
+            updatedAt: card.updatedAt,
+            userId: card.userId
+          };
+          const resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok) {
+            const text = await resp.text();
+            alert(`Save failed: ${resp.status} ${text}`);
+          } else {
+            alert('Saved successfully');
+          }
+        } catch (err) {
+          console.error('Error saving:', err);
+          alert('Error saving changes');
+        }
+      });
+    }
     } catch (err) {
         console.error('Error loading calculator:', err);
     }

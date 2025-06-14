@@ -56,7 +56,8 @@ public class Application {
 		// service
 		ServiceRegistry.register(SessionManager.class, new SessionManager(get(SessionRepository.class)));
 		ServiceRegistry.register(LoginService.class, new LoginService(get(UserRepository.class), get(SessionManager.class)));
-		ServiceRegistry.register(CalculatorService.class, new CalculatorService(get(CalculatorRepository.class)));
+		ServiceRegistry.register(CalculatorService.class,
+			new CalculatorService(get(CalculatorRepository.class), get(SessionRepository.class)));
 		// controllers
 		ServiceRegistry.register(LoginController.class, new LoginController(get(SessionManager.class), get(LoginService.class)));
 		ServiceRegistry.register(CalculatorsController.class, new CalculatorsController(get(SessionManager.class), get(CalculatorService.class)));
