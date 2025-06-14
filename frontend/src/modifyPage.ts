@@ -85,35 +85,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             const min = slider.minValue;
             const max = slider.maxValue;
             const step = slider.step;
-            // Label with editable range text
+            // Label with editable min and max fields
             const label = document.createElement('label');
             label.htmlFor = `${card.id}-${slider.id}`;
             label.className = 'modify-slider-label';
             const nameSpan = document.createElement('span');
             nameSpan.textContent = slider.name;
-            const rangeSpan = document.createElement('span');
-            rangeSpan.className = 'slider-range-text';
-            rangeSpan.textContent = `${min} - ${max}`;
-            rangeSpan.style.cursor = 'pointer';
-            rangeSpan.addEventListener('dblclick', () => {
-              rangeSpan.contentEditable = 'true';
-              rangeSpan.focus();
+            const minSpan = document.createElement('span');
+            minSpan.className = 'slider-range-min';
+            minSpan.textContent = String(min);
+            const dashSpan = document.createElement('span');
+            dashSpan.className = 'slider-range-dash';
+            dashSpan.textContent = ' - ';
+            const maxSpan = document.createElement('span');
+            maxSpan.className = 'slider-range-max';
+            maxSpan.textContent = String(max);
+            // make min/max editable on click
+            [minSpan, maxSpan].forEach(span => {
+              span.style.cursor = 'pointer';
+              span.addEventListener('click', () => {
+                const initial = parseFloat(span.textContent || '');
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.value = String(initial);
+                input.className = 'slider-edit-input';
+                span.replaceWith(input);
+                input.focus();
+                input.select();
+                function commit() {
+                  const val = parseFloat(input.value);
+                  if (!isNaN(val)) {
+                    span.textContent = String(val);
+                    if (span === minSpan) rangeInput.min = span.textContent;
+                    else rangeInput.max = span.textContent;
+                  }
+                  input.replaceWith(span);
+                }
+                input.addEventListener('blur', commit);
+                input.addEventListener('keydown', e => { if (e.key === 'Enter') commit(); });
+              });
             });
-            rangeSpan.addEventListener('blur', () => {
-              rangeSpan.contentEditable = 'false';
-              const parts = rangeSpan.textContent?.split('-') || [];
-              const newMin = parseFloat(parts[0]?.trim() || '');
-              const newMax = parseFloat(parts[1]?.trim() || '');
-              if (!isNaN(newMin)) rangeInput.min = String(newMin);
-              if (!isNaN(newMax)) rangeInput.max = String(newMax);
-            });
-            rangeSpan.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                rangeSpan.blur();
-              }
-            });
-            label.append(nameSpan, rangeSpan);
+            label.append(nameSpan, minSpan, dashSpan, maxSpan);
             wrapper.append(label);
             // Slider input
             const rangeInput = document.createElement('input');

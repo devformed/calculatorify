@@ -89,8 +89,22 @@
   font-family: $font-sans;
   color: $color-text;
 }
-.slider-range-text {
+// Editable min/max spans next to slider label
+.slider-range-min,
+.slider-range-max {
   margin-left: 0.5rem;
+  margin-right: 0.5rem;
   color: $color-text-secondary;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.slider-range-dash {
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+}
+// Input field for editing min/max
+.slider-edit-input {
+  width: 4rem;
+  padding: 0.25rem;
   font-size: 0.875rem;
 }
