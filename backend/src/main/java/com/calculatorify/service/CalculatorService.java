@@ -4,7 +4,6 @@ import com.calculatorify.exception.HttpHandlerException;
 import com.calculatorify.model.dto.calculator.CalculatorDto;
 import com.calculatorify.model.dto.calculator.CalculatorEnrichedEntry;
 import com.calculatorify.model.dto.calculator.CalculatorEntry;
-import com.calculatorify.model.dto.calculator.config.CalculatorConfig;
 import com.calculatorify.model.dto.calculator.config.CalculatorOutput;
 import com.calculatorify.model.dto.http.HttpPathContext;
 import com.calculatorify.model.dto.http.HttpResponse;
@@ -18,13 +17,12 @@ import com.calculatorify.util.Json;
 import com.calculatorify.util.http.HttpConstants;
 import com.calculatorify.util.http.HttpHeaders;
 import com.calculatorify.util.http.HttpUtils;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -94,48 +92,33 @@ public class CalculatorService {
 	}
 
 	public HttpResponse construct(HttpExchange exchange, HttpPathContext context) throws Exception {
-		String sessionId = HttpUtils.getSessionId(exchange).orElseThrow();
-		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId)).orElseThrow();
+		String sessionId = HttpUtils.getSessionId(exchange)
+				.orElseThrow(() -> new HttpHandlerException(401, "Unauthorized"));
+		sessionRepository.findById(UUID.fromString(sessionId))
+				.orElseThrow(() -> new HttpHandlerException(401, "Invalid session"));
 
 		String prompt = context.getRequestParam("query");
+
 		String aiBaseUrl = System.getenv().getOrDefault("BACKEND_AI_URL", "http://localhost:8000");
-		Map<String, String> bodyMap = Map.of("message", prompt);
-		String jsonBody = Json.toJsonSneaky(bodyMap);
-		HttpRequest httpRequest = HttpRequest.newBuilder()
+		String systemMessage = System.getenv().getOrDefault("BACKEND_AI_SYSTEM_MESSAGE", LLM_SYSTEM_MSG);
+
+		java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+		java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
 				.uri(URI.create(aiBaseUrl + "/chat"))
 				.header(HttpHeaders.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_APPLICATION_JSON)
-				.POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+				.POST(java.net.http.HttpRequest.BodyPublishers.ofString(Json.toJson(new ChatRequest(systemMessage, prompt, "o3"))))
 				.build();
-		HttpClient client = HttpClient.newHttpClient();
-		int failures = 0;
-		while (true) {
-			java.net.http.HttpResponse<String> response = client.send(
-					httpRequest,
-					java.net.http.HttpResponse.BodyHandlers.ofString()
+		java.net.http.HttpResponse<String> aiResponse = client.send(
+				httpRequest,
+				java.net.http.HttpResponse.BodyHandlers.ofString()
+		);
+		if (aiResponse.statusCode() != 200) {
+			throw new HttpHandlerException(
+					aiResponse.statusCode(),
+					"Error from backend-ai: " + aiResponse.body()
 			);
-			try {
-				JsonNode node = Json.readTree(response.body());
-				String title = node.get("title").textValue();
-				String description = node.get("description").textValue();
-				CalculatorConfig config = Json.toValue(node.get("config"), CalculatorConfig.class);
-				return HttpResponse.ok(CalculatorEntry.builder()
-						.title(title)
-						.description(description)
-						.config(config)
-						.createdAt(Instant.now())
-						.updatedAt(Instant.now())
-						.userId(sessionEntry.getUserId())
-						.build());
-			} catch (Exception e) {
-				failures++;
-				if (failures >= 3) {
-					throw new HttpHandlerException(
-							500,
-							"Failed to get a valid response from backend-ai after 3 attempts"
-					);
-				}
-			}
 		}
+		return HttpResponse.ok(aiResponse.body());
 	}
 
 	private Map<String, List<Token>> getOutputNameToPostfixFormula(CalculatorEntry entry) {
@@ -157,4 +140,90 @@ public class CalculatorService {
 				.outputNameToPostfixFormula(getOutputNameToPostfixFormula(entry))
 				.build();
 	}
+
+	@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+	private record ChatRequest(
+			String systemMessage,
+			String message,
+			String model
+	) {
+	}
+
+	// todo move to properties this ugly ahh constant
+	private static final String LLM_SYSTEM_MSG = """
+			<SYSTEM>
+			You are “Calculator-Config-Generator”.
+			Return ONE valid JSON object of the exact form
+			{
+			"title":        "<short Polish title>",
+			"description":  "<longer Polish description or null>",
+			"config": {
+			"inputs":  [<CalculatorInput>, …],
+			"outputs": [<CalculatorOutput>, …]
+			}
+			}
+			
+			Allowed input types and required fields. Prioritize slider inputs over number inputs.
+			NUMBER
+			{
+			"type": "NUMBER",
+			"id": "<snake_case_english_identifier>",
+			"name": "<Polish label>",
+			"order": <1-based integer>,
+			"number": <default BigDecimal>,
+			"precision": <non-negative integer>
+			}
+			SLIDER
+			{
+			"type": "SLIDER",
+			"id": "<snake_case_english_identifier>",
+			"name": "<Polish label>",
+			"order": <1-based integer>,
+			"minValue": <BigDecimal>,
+			"maxValue": <BigDecimal>,
+			"step":    <BigDecimal>
+			}
+			RADIO_BUTTONS
+			{
+			"type": "RADIO_BUTTONS",
+			"id": "<snake_case_english_identifier>",
+			"name": "<Polish label>",
+			"order": <1-based integer>,
+			"nameValueOptions": {
+			"<visible option 1>": <BigDecimal>,
+			"<visible option 2>": <BigDecimal>,
+			…
+			}
+			}
+			
+			Allowed output structure
+			{
+			"name":      "<Polish label>",
+			"formula":   "<expression using ${<inputId>} placeholders>",
+			"precision": <non-negative integer>,
+			"order":     <1-based integer>
+			}
+			
+			Expression language
+			Operators: +  -  *  /  ^  %
+			Functions: SQRT, POW, LN, LOG10, EXP, SIN, COS, TAN,
+			DECIMAL, BOOLEAN, ABS,
+			ROUND, ROUND_TO_N, ROUND_UP_TO_N, ROUND_DOWN_TO_N,
+			MIN, MAX
+			Example: "formula":
+			"ROUND_TO_N(${weight} / POW(${height} / 100, 2), 1)"
+			
+			Rules
+			title: concise Polish noun phrase, capitalized.
+			description: full sentence in Polish or null if not supplied.
+			All numeric literals must be JSON numbers, not strings.
+			"id" values: lower-snake-case English.
+			"name" values: human-friendly Polish.
+			"order" starts at 1 and is consecutive within its array.
+			Respond with pure JSON: no markdown fencing, no comments, no extra keys.
+			If multiple calculators fit, choose the one that best matches the request.
+			If the request is ambiguous, make sensible assumptions.
+			
+			Return ONLY the JSON object.
+			""";
 }
