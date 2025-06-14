@@ -18,6 +18,7 @@ import com.calculatorify.util.Json;
 import com.calculatorify.util.http.HttpConstants;
 import com.calculatorify.util.http.HttpHeaders;
 import com.calculatorify.util.http.HttpUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sun.net.httpserver.HttpExchange;
@@ -110,13 +111,17 @@ public class CalculatorService {
 	}
 
 	public HttpResponse construct(HttpExchange exchange, HttpPathContext context) throws Exception {
-		String prompt = context.getRequestParam("query");
-		System.out.println(prompt);
+        // read prompt from JSON request body instead of query param
+        String body = HttpUtils.getRequestBody(exchange);
+        JsonNode json = Json.readTree(body);
+        if (!json.has("prompt")) {
+            throw new HttpHandlerException(400, "Missing prompt in request body");
+        }
+        String prompt = json.get("prompt").asText();
 
 		String aiBaseUrl = System.getenv().getOrDefault("BACKEND_AI_URL", "http://localhost:8000");
 		String systemMessage = System.getenv().getOrDefault("BACKEND_AI_SYSTEM_MESSAGE", LLM_SYSTEM_MSG);
 		String payload = Json.toJson(new ChatRequest(systemMessage, prompt, "o4-mini"));
-		System.out.println(payload);
 
 		// use OkHttp to forward request
 		okhttp3.OkHttpClient client = new OkHttpClient.Builder()

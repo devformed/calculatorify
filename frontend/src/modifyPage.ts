@@ -255,11 +255,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load entry by prompt or by id
     if (prompt) {
-        // create from AI
+        // create from AI via JSON body
         const loader = showLoader();
-        const resp = await fetch(`http://localhost:8080/calculators/construct?query=${encodeURIComponent(prompt)}`, {
+        const resp = await fetch(`http://localhost:8080/calculators/construct`, {
             method: 'POST',
-            credentials: 'include'
+            credentials: 'include',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({prompt})
         });
         loader.remove();
         if (!resp.ok) {
@@ -611,8 +613,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (saveBtn) {
             saveBtn.addEventListener('click', async () => {
                 try {
-                    // Prepare updated fields
-                    // Build full CalculatorDto payload
+                    // Build full payload (id undefined for new entries)
                     const payload = {
                         id: card.id,
                         title: card.title,
@@ -622,15 +623,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                         updatedAt: card.updatedAt,
                         userId: card.userId
                     };
-                    const resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
-                        method: 'PUT',
-                        credentials: 'include',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(payload)
-                    });
+                    let resp;
+                    // Decide POST (create) vs PUT (update)
+                    if (card.id) {
+                        resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
+                            method: 'PUT',
+                            credentials: 'include',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(payload)
+                        });
+                    } else {
+                        resp = await fetch(`http://localhost:8080/calculators`, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(payload)
+                        });
+                    }
                     if (!resp.ok) {
                         const text = await resp.text();
                         alert(`Save failed: ${resp.status} ${text}`);
+                        return;
+                    }
+                    // On create, server returns new id
+                    if (!card.id) {
+                        const newId = await resp.json();
+                        card.id = newId;
+                        // Redirect to edit page with new id
+                        window.location.href = `${window.location.pathname}?id=${newId}`;
                     } else {
                         alert('Saved successfully');
                     }
