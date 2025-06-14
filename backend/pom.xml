@@ -15,6 +15,7 @@
 		<flyway.version>11.9.1</flyway.version>
 		<jbcrypt.version>0.4</jbcrypt.version>
 		<google-guava.version>33.4.8-jre</google-guava.version>
+		<apache-commons.version>3.17.0</apache-commons.version>
 		<jackson.version>2.19.0</jackson.version>
 		<lombok.version>1.18.32</lombok.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
@@ -47,6 +48,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${google-guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${apache-commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>

@@ -4,7 +4,7 @@ export function initDashboardSearch(): void {
     let debounceTimer: number;
     aiInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
-        debounceTimer = window.setTimeout(async () => onInputChanged(aiInput), 1500);
+        debounceTimer = window.setTimeout(async () => onInputChanged(aiInput), 300);
     });
 }
 

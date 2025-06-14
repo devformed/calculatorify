@@ -18,7 +18,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @AllArgsConstructor
-public class CalculatorEntry {
+public class CalculatorDto {
 
     @NotNull
     private UUID id;
