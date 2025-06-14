@@ -339,3 +339,27 @@
   flex: 0 0 auto;
   color: $color-text-secondary;
 }
+
+// Modify page layout
+.modify-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.modify-panels {
+  display: flex;
+  gap: 2rem;
+}
+.modify-inputs,
+.modify-outputs {
+  flex: 1;
+}
+.modify-separator {
+  width: 1px;
+  background: $color-border;
+}
+.modify-description {
+  font-size: 1rem;
+  color: $color-text;
+  padding-top: 1rem;
+}

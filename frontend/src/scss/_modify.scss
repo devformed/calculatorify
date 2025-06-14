@@ -1,0 +1,42 @@
+@use 'variables' as *;
+@use 'layout' as *;
+
+// Actions section
+.modify-actions {
+  text-align: right;
+  margin-top: 1rem;
+}
+
+// Ensure modify page card stretches full width and resets flex sizing
+.dashboard-card.modify-card {
+  flex: none;
+  width: 100%;
+  min-width: auto;
+  border: none;
+  background-color: transparent;
+}
+
+// Two-column panels inside modify-card
+.modify-panels {
+  display: flex;
+  gap: 2rem;
+}
+
+// Left and right panels
+.modify-inputs,
+.modify-outputs {
+  flex: 1;
+}
+
+// Vertical separator line between panels
+.modify-separator {
+  width: 1px;
+  background: $color-border;
+}
+
+// Description below panels
+.modify-description {
+  font-size: 1rem;
+  color: $color-text;
+  padding-top: 1rem;
+}
