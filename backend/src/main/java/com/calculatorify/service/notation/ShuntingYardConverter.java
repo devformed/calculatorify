@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * @author Anton Gorokh
  */
-final class ShuntingYardConverter {
+public final class ShuntingYardConverter {
 
-	static List<Token> toPostfix(List<Token> infix) {
+	public static List<Token> toPostfix(List<Token> infix) {
 		List<Token> output = new ArrayList<>();
 		Deque<Token> stack = new ArrayDeque<>();
 

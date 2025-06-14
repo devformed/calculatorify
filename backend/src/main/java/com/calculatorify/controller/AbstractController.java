@@ -11,14 +11,13 @@ import com.google.common.collect.ImmutableMap;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
 
 import static com.calculatorify.util.Json.toJsonSneaky;
 import static com.calculatorify.util.Utils.nn;
@@ -26,7 +25,7 @@ import static com.calculatorify.util.Utils.nn;
 /**
  * @author Anton Gorokh
  */
-@Log
+@Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractController implements HttpHandler {
 
@@ -35,6 +34,7 @@ public abstract class AbstractController implements HttpHandler {
 
 	@Override
 	public final void handle(HttpExchange exchange) throws IOException {
+		log.info("Incoming request {} {}", exchange.getRequestMethod(), exchange.getRequestURI());
 		try {
 			addCorsHeaders(exchange);
 			if (HttpMethod.OPTIONS.is(exchange.getRequestMethod())) {
@@ -56,12 +56,13 @@ public abstract class AbstractController implements HttpHandler {
             });
 			sendResponse(exchange, response);
 		} catch (HttpHandlerException e) {
+			log.warn("{} {}", e.getStatusCode(), e.getMessage());
 			sendResponse(exchange, HttpResponse.text(e.getStatusCode(), e.getMessage()));
-		} catch (IllegalArgumentException | IllegalStateException | UnsupportedOperationException |
-				 NoSuchElementException e) {
+		} catch (IllegalArgumentException | IllegalStateException | UnsupportedOperationException | NoSuchElementException e) {
+			log.warn("{}", e.getMessage());
 			sendResponse(exchange, HttpResponse.text(HttpURLConnection.HTTP_BAD_REQUEST, e.getMessage()));
 		} catch (Exception e) {
-			log.log(Level.SEVERE, "Internal Error: %s".formatted(e.getMessage()), e);
+			log.error("{}", e.getMessage());
 			sendResponse(exchange, HttpResponse.text(HttpURLConnection.HTTP_INTERNAL_ERROR, "Internal Server Error: %s".formatted(e.getMessage())));
 		} finally {
 			exchange.close();
