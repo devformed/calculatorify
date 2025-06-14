@@ -3,11 +3,12 @@
 // Slider label layout: name on left, range text on right
 .modify-slider-label {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   font-size: 1rem;
   color: $color-text;
+  gap: 1rem;
 }
+
 .modify-actions {
   text-align: right;
   margin-top: 1rem;
@@ -39,6 +40,7 @@
 .modify-outputs {
   flex: 1;
 }
+
 // Add vertical padding between individual inputs and outputs
 .modify-inputs .dashboard-card-input,
 .modify-outputs .dashboard-card-output {
@@ -57,18 +59,22 @@
   color: $color-text;
   padding-top: 1rem;
 }
-// Range text next to slider label
-.slider-range-container {
-  display: flex;
+
+// Range text group next to slider label
+// Range text group next to slider label
+.slider-range-group {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   margin-bottom: 0.5rem;
 }
+
 .slider-name {
   font-size: 1rem;
   font-family: $font-sans;
   color: $color-text;
 }
+
 .slider-mod-min,
 .slider-mod-max {
   width: 4rem;
@@ -79,32 +85,61 @@
   font-family: $font-sans;
   color: $color-text;
 }
+
 .slider-range-dash {
   font-size: 1rem;
   color: $color-text;
 }
+
 .slider-current-value {
   margin-left: 0.75rem;
   font-size: 1rem;
   font-family: $font-sans;
   color: $color-text;
 }
+
 // Editable min/max spans next to slider label
-.slider-range-min,
-.slider-range-max {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+/* smaller gaps around dash */
+ .slider-mod-min,
+ .slider-mod-max {
+  margin: 0 0.25rem;
   color: $color-text-secondary;
   font-size: 0.875rem;
   cursor: pointer;
 }
+
 .slider-range-dash {
   color: $color-text-secondary;
-  font-size: 0.875rem;
-}
-// Input field for editing min/max
-.slider-edit-input {
-  width: 4rem;
-  padding: 0.25rem;
-  font-size: 0.875rem;
+
+  .slider-range-dash {
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+    margin: 0 0.25ch;
+  }
+
+  // Current slider value next to slider
+// Current slider value displayed to the right
+.slider-value {
+  margin-left: auto;
+    font-size: 1rem;
+    color: $color-text;
+  }
+
+  // Input field for editing min/max
+  /* compact inline edit field, override generic number input styling */
+  .dashboard-card.modify-card .dashboard-card-input .slider-edit-input {
+    display: inline-block !important;
+    width: auto !important;
+    min-width: 2ch !important;
+    padding: 0 0.25ch !important;
+    font-size: 0.875rem !important;
+    font-family: $font-sans !important;
+    color: $color-text !important;
+    border: none !important;
+    border-bottom: 1px dashed $color-border !important;
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    line-height: normal !important;
+  }
 }

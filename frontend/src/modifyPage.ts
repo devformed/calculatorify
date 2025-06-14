@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const label = document.createElement('label');
             label.htmlFor = `${card.id}-${slider.id}`;
             label.className = 'modify-slider-label';
+            // Create label with name and range group
             const nameSpan = document.createElement('span');
             nameSpan.textContent = slider.name;
             const minSpan = document.createElement('span');
@@ -96,11 +97,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             minSpan.textContent = String(min);
             const dashSpan = document.createElement('span');
             dashSpan.className = 'slider-range-dash';
-            dashSpan.textContent = ' - ';
+            dashSpan.textContent = '-';
             const maxSpan = document.createElement('span');
             maxSpan.className = 'slider-range-max';
             maxSpan.textContent = String(max);
-            // make min/max editable on click
+            // Wrap min-dash-max in a group for correct alignment
+            const rangeGroup = document.createElement('span');
+            rangeGroup.className = 'slider-range-group';
+            rangeGroup.append(minSpan, dashSpan, maxSpan);
+            // Make min/max editable on click
             [minSpan, maxSpan].forEach(span => {
               span.style.cursor = 'pointer';
               span.addEventListener('click', () => {
@@ -125,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 input.addEventListener('keydown', e => { if (e.key === 'Enter') commit(); });
               });
             });
-            label.append(nameSpan, minSpan, dashSpan, maxSpan);
+            label.append(nameSpan, rangeGroup);
             wrapper.append(label);
             // Slider input
             const rangeInput = document.createElement('input');
@@ -139,7 +144,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             const randomStep = Math.floor(Math.random() * (stepsCount + 1));
             const initVal = min + randomStep * step;
             rangeInput.value = String(initVal);
-            wrapper.append(rangeInput);
+            // Slider and current value row
+            const sliderRow = document.createElement('div');
+            sliderRow.className = 'modify-slider-row';
+            sliderRow.append(rangeInput);
+            // Display current slider value
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'slider-value';
+            valueSpan.textContent = rangeInput.value;
+            sliderRow.append(valueSpan);
+            wrapper.append(sliderRow);
+            // Update on input
+            rangeInput.addEventListener('input', () => {
+              valueSpan.textContent = rangeInput.value;
+            });
           } else if (input.type === 'NUMBER') {
             const numIn = input as NumberInput;
             const label = document.createElement('label');
