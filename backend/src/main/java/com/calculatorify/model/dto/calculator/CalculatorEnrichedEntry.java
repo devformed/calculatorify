@@ -2,11 +2,13 @@ package com.calculatorify.model.dto.calculator;
 
 import com.calculatorify.model.dto.calculator.config.CalculatorConfig;
 import com.calculatorify.service.notation.token.Token;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -21,6 +23,8 @@ import java.util.UUID;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CalculatorEnrichedEntry {
 
     @NotNull

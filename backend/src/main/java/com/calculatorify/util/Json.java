@@ -32,6 +32,10 @@ public final class Json {
 		return MAPPER.readValue(json, clazz);
 	}
 
+	public static <T> T fromJson(JsonNode node, Class<T> clazz) throws JsonProcessingException {
+		return MAPPER.readValue(node.toString(), clazz);
+	}
+
 	@SneakyThrows
 	public static <T> T fromJsonSneaky(String json, Class<T> clazz) {
 		return fromJson(json, clazz);

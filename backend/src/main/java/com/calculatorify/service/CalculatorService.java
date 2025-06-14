@@ -4,6 +4,7 @@ import com.calculatorify.exception.HttpHandlerException;
 import com.calculatorify.model.dto.calculator.CalculatorDto;
 import com.calculatorify.model.dto.calculator.CalculatorEnrichedEntry;
 import com.calculatorify.model.dto.calculator.CalculatorEntry;
+import com.calculatorify.model.dto.calculator.config.CalculatorConfig;
 import com.calculatorify.model.dto.calculator.config.CalculatorOutput;
 import com.calculatorify.model.dto.http.HttpPathContext;
 import com.calculatorify.model.dto.http.HttpResponse;
@@ -21,12 +22,13 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.RequiredArgsConstructor;
+import okhttp3.OkHttpClient;
 
-import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -102,30 +104,39 @@ public class CalculatorService {
 
 		String aiBaseUrl = System.getenv().getOrDefault("BACKEND_AI_URL", "http://localhost:8000");
 		String systemMessage = System.getenv().getOrDefault("BACKEND_AI_SYSTEM_MESSAGE", LLM_SYSTEM_MSG);
-		String payload = Json.toJson(new ChatRequest(systemMessage, prompt, "o3"));
+		String payload = Json.toJson(new ChatRequest(systemMessage, prompt, "o4-mini"));
 		System.out.println(payload);
 
-		java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
-		java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
-				.uri(URI.create(aiBaseUrl + "/chat"))
-				.header(HttpHeaders.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_APPLICATION_JSON)
-				.POST(java.net.http.HttpRequest.BodyPublishers.ofString(payload))
+		// use OkHttp to forward request
+		okhttp3.OkHttpClient client = new OkHttpClient.Builder()
+				.connectTimeout(3, TimeUnit.MINUTES)
+				.readTimeout(1, TimeUnit.MINUTES)
+				.writeTimeout(1, TimeUnit.MINUTES)
+				.callTimeout(1, TimeUnit.MINUTES)
 				.build();
-		java.net.http.HttpResponse<String> aiResponse = client.send(
-				httpRequest,
-				java.net.http.HttpResponse.BodyHandlers.ofString()
-		);
-		if (aiResponse.statusCode() != 200) {
-			throw new HttpHandlerException(
-					aiResponse.statusCode(),
-					"Error from backend-ai: " + aiResponse.body()
-			);
+		okhttp3.MediaType mediaType = okhttp3.MediaType.parse(HttpConstants.CONTENT_TYPE_APPLICATION_JSON);
+		okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(payload, mediaType);
+		okhttp3.Request request = new okhttp3.Request.Builder()
+				.url(aiBaseUrl + "/chat")
+				.addHeader(HttpHeaders.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_APPLICATION_JSON)
+				.post(requestBody)
+				.build();
+		try (okhttp3.Response response = client.newCall(request).execute()) {
+			String respBody = response.body() != null ? response.body().string() : null;
+			if (response.code() != 200) {
+				throw new HttpHandlerException(
+						response.code(),
+						"Error from backend-ai: " + respBody
+				);
+			}
+			CalculatorEnrichedEntry entry = Json.fromJson(Json.readTree(Json.readTree(respBody).get("response").asText()), CalculatorEnrichedEntry.class);
+			entry.setOutputNameToPostfixFormula(getOutputNameToPostfixFormula(entry.getConfig()));
+			return HttpResponse.ok(entry);
 		}
-		return HttpResponse.ok(aiResponse.body());
 	}
 
-	private Map<String, List<Token>> getOutputNameToPostfixFormula(CalculatorEntry entry) {
-		return entry.getConfig()
+	private Map<String, List<Token>> getOutputNameToPostfixFormula(CalculatorConfig config) {
+		return config
 				.getOutputs()
 				.stream()
 				.collect(Collectors.toMap(CalculatorOutput::name, output -> ShuntingYardConverter.toPostfix(Tokenizer.tokenize(output.formula()))));
@@ -140,7 +151,7 @@ public class CalculatorService {
 				.createdAt(entry.getCreatedAt())
 				.updatedAt(entry.getUpdatedAt())
 				.userId(entry.getUserId())
-				.outputNameToPostfixFormula(getOutputNameToPostfixFormula(entry))
+				.outputNameToPostfixFormula(getOutputNameToPostfixFormula(entry.getConfig()))
 				.build();
 	}
 
@@ -227,6 +238,6 @@ public class CalculatorService {
 			If multiple calculators fit, choose the one that best matches the request.
 			If the request is ambiguous, make sensible assumptions.
 			
-			Return ONLY the JSON object.
+			Return ONLY the JSON object in compressed form, without any additional text or formatting.
 			""";
 }

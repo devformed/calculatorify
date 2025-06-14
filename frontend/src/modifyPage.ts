@@ -278,16 +278,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         return;
     }
+    // Entry loaded into 'card' (from /construct or GET)
     try {
-        const resp = await fetch(`http://localhost:8080/calculators/${id}`, {
-            method: 'GET',
-            credentials: 'include'
-        });
-        if (!resp.ok) {
-            console.error('Failed to load calculator:', resp.status);
-            return;
-        }
-        const card: CalculatorEntry = await resp.json();
+        console.log(card);
         const titleEl = document.getElementById('modifyTitle') as HTMLElement;
         if (titleEl) {
             titleEl.textContent = card.title;
