@@ -449,6 +449,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     // Save changes button
     const saveBtn = document.getElementById('saveChanges') as HTMLButtonElement;
+    const deleteBtn = document.getElementById('deleteCalculator') as HTMLButtonElement;
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to delete this calculator?')) return;
+        try {
+          const resp = await fetch(`http://localhost:8080/calculators/${card.id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+          });
+          if (!resp.ok) {
+            const text = await resp.text();
+            alert(`Delete failed: ${resp.status} ${text}`);
+          } else {
+            alert('Deleted successfully');
+            window.location.href = 'dashboard.html';
+          }
+        } catch (err) {
+          console.error('Error deleting:', err);
+          alert('Error deleting calculator');
+        }
+      });
+    }
     if (saveBtn) {
       saveBtn.addEventListener('click', async () => {
         try {

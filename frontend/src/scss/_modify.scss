@@ -10,8 +10,18 @@
 }
 
 .modify-actions {
-  text-align: right;
+  display: flex;
+  justify-content: end;
+  align-items: center;
   margin-top: 1rem;
+}
+// Danger button styling
+.btn-danger {
+  background-color: #dc3545;
+  color: $white;
+  border: none;
+  @extend .btn;
+  margin-right: 1.5rem;
 }
 
 // Ensure modify page card stretches full width and resets flex sizing

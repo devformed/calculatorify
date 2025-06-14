@@ -20,6 +20,7 @@ public class CalculatorsController extends AbstractController {
                 .put(HttpContextMatcher.of(HttpMethod.GET, "/calculators"), service::getCalculators)
                 .put(HttpContextMatcher.of(HttpMethod.GET, "/calculators/{id}"), service::getCalculator)
                 .put(HttpContextMatcher.of(HttpMethod.PUT, "/calculators/{id}"), service::updateCalculator)
+                .put(HttpContextMatcher.of(HttpMethod.DELETE, "/calculators/{id}"), service::deleteCalculator)
                 .build();
     }
 }

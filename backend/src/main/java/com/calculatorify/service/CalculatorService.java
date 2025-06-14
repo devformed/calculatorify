@@ -69,6 +69,24 @@ public class CalculatorService {
         return HttpResponse.ok();
     }
 
+    public HttpResponse deleteCalculator(HttpExchange exchange, HttpPathContext context) {
+        UUID id = UUID.fromString(context.getPathVariable("id"));
+        CalculatorEntry existing = repository.findById(id)
+                .orElseThrow(() -> new HttpHandlerException(404, "Calculator not found: %s".formatted(id)));
+
+        // authorize: only owner can delete
+        String sessionId = HttpUtils.getSessionId(exchange)
+                .orElseThrow(() -> new HttpHandlerException(401, "Unauthorized"));
+        SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId))
+                .orElseThrow(() -> new HttpHandlerException(401, "Invalid session"));
+        if (!sessionEntry.getUserId().equals(existing.getUserId())) {
+            throw new HttpHandlerException(403, "Only author can delete this calculator");
+        }
+
+        repository.delete(id);
+        return HttpResponse.ok();
+    }
+
 	private Map<String, List<Token>> getOutputNameToPostfixFormula(CalculatorEntry entry) {
 		return entry.getConfig()
 				.getOutputs()
