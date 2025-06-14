@@ -98,15 +98,18 @@ public class CalculatorService {
 				.orElseThrow(() -> new HttpHandlerException(401, "Invalid session"));
 
 		String prompt = context.getRequestParam("query");
+		System.out.println(prompt);
 
 		String aiBaseUrl = System.getenv().getOrDefault("BACKEND_AI_URL", "http://localhost:8000");
 		String systemMessage = System.getenv().getOrDefault("BACKEND_AI_SYSTEM_MESSAGE", LLM_SYSTEM_MSG);
+		String payload = Json.toJson(new ChatRequest(systemMessage, prompt, "o3"));
+		System.out.println(payload);
 
 		java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
 		java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
 				.uri(URI.create(aiBaseUrl + "/chat"))
 				.header(HttpHeaders.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_APPLICATION_JSON)
-				.POST(java.net.http.HttpRequest.BodyPublishers.ofString(Json.toJson(new ChatRequest(systemMessage, prompt, "o3"))))
+				.POST(java.net.http.HttpRequest.BodyPublishers.ofString(payload))
 				.build();
 		java.net.http.HttpResponse<String> aiResponse = client.send(
 				httpRequest,
