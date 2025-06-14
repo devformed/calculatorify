@@ -252,12 +252,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         const card: CalculatorEntry = await resp.json();
-        const titleEl = document.getElementById('modifyTitle');
-        if (titleEl) titleEl.textContent = card.title;
+        const titleEl = document.getElementById('modifyTitle') as HTMLElement;
+        if (titleEl) {
+            titleEl.textContent = card.title;
+            // inline edit title
+            titleEl.style.cursor = 'pointer';
+            titleEl.addEventListener('dblclick', () => {
+                titleEl.contentEditable = 'true';
+                titleEl.focus();
+            });
+            titleEl.addEventListener('blur', () => {
+                titleEl.contentEditable = 'false';
+                card.title = titleEl.textContent || card.title;
+            });
+            titleEl.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); titleEl.blur(); }
+            });
+        }
         const inputsContainer = document.getElementById('inputsContainer') as HTMLElement;
         const outputsContainer = document.getElementById('outputsContainer') as HTMLElement;
         const descriptionEl = document.getElementById('modifyDescription') as HTMLElement;
         if (!inputsContainer || !outputsContainer || !descriptionEl) return;
+        // inline edit description
+        descriptionEl.style.cursor = 'pointer';
+        descriptionEl.addEventListener('dblclick', () => {
+            descriptionEl.contentEditable = 'true';
+            descriptionEl.focus();
+        });
+        descriptionEl.addEventListener('blur', () => {
+            descriptionEl.contentEditable = 'false';
+            card.description = descriptionEl.textContent || '';
+        });
+        descriptionEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); descriptionEl.blur(); }});
         // Inputs section
         if (card.config.inputs && card.config.inputs.length) {
             const inpLabel = document.createElement('div');
@@ -279,8 +305,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         label.htmlFor = `${card.id}-${slider.id}`;
                         label.className = 'modify-slider-label';
                         // Create label with name and range group
-                        const nameSpan = document.createElement('span');
-                        nameSpan.textContent = slider.name;
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = slider.name;
+            // inline edit input label
+            nameSpan.style.cursor = 'pointer';
+            nameSpan.addEventListener('click', () => {
+              nameSpan.contentEditable = 'true';
+              nameSpan.focus();
+            });
+            nameSpan.addEventListener('blur', () => {
+              nameSpan.contentEditable = 'false';
+              slider.name = nameSpan.textContent || slider.name;
+            });
+            nameSpan.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nameSpan.blur(); }});
                         const minSpan = document.createElement('span');
                         minSpan.className = 'slider-range-min';
                         minSpan.textContent = String(min);
@@ -350,7 +387,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const numIn = input as NumberInput;
                         const label = document.createElement('label');
                         label.htmlFor = `${card.id}-${numIn.id}`;
-                        label.textContent = numIn.name;
+            const nameSpan2 = document.createElement('span');
+            nameSpan2.textContent = numIn.name;
+            nameSpan2.style.cursor = 'pointer';
+            nameSpan2.addEventListener('click', () => {
+              nameSpan2.contentEditable = 'true';
+              nameSpan2.focus();
+            });
+            nameSpan2.addEventListener('blur', () => {
+              nameSpan2.contentEditable = 'false';
+              numIn.name = nameSpan2.textContent || numIn.name;
+            });
+            nameSpan2.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nameSpan2.blur(); }});
+            label.textContent = '';
+            label.append(nameSpan2);
                         const numEl = document.createElement('input');
                         numEl.type = 'number';
                         numEl.id = `${card.id}-${numIn.id}`;
@@ -361,7 +411,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const rad = input as RadioButtonsInput;
                         const fieldset = document.createElement('fieldset');
                         const legend = document.createElement('legend');
-                        legend.textContent = rad.name;
+            const legendSpan = document.createElement('span');
+            legendSpan.textContent = rad.name;
+            legendSpan.style.cursor = 'pointer';
+            legendSpan.addEventListener('click', () => {
+              legendSpan.contentEditable = 'true';
+              legendSpan.focus();
+            });
+            legendSpan.addEventListener('blur', () => {
+              legendSpan.contentEditable = 'false';
+              rad.name = legendSpan.textContent || rad.name;
+            });
+            legendSpan.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); legendSpan.blur(); }});
+            legend.textContent = '';
+            legend.append(legendSpan);
                         fieldset.append(legend);
                         Object.entries(rad.nameValueOptions).forEach(([optName, optVal], idx) => {
                             const optionId = `${card.id}-${rad.id}-${idx}`;
@@ -403,6 +466,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const labelEl = document.createElement('span');
                     labelEl.className = 'dashboard-card-output-label';
                     labelEl.textContent = name;
+                    // inline edit output name
+                    labelEl.style.cursor = 'pointer';
+                    const outObj = card.config.outputs.find(o => o.name === name)!;
+                    labelEl.addEventListener('click', () => {
+                      labelEl.contentEditable = 'true';
+                      labelEl.focus();
+                    });
+                    labelEl.addEventListener('blur', () => {
+                      labelEl.contentEditable = 'false';
+                      outObj.name = labelEl.textContent || outObj.name;
+                    });
+                    labelEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); labelEl.blur(); }});
                     const valueEl = document.createElement('span');
                     valueEl.className = 'dashboard-card-output-value';
                     valueEl.textContent = ''; // will be computed
