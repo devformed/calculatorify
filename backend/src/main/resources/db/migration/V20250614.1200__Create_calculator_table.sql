@@ -24,14 +24,16 @@ VALUES ('Kalkulator kredytowy',
               "name": "Kwota kredytu (PLN)",
               "minValue": 10000,
               "maxValue": 500000,
-              "step": 1000
+              "step": 1000,
+              "order": 1
             },
             {
               "type": "NUMBER",
               "id": "interest_rate",
               "name": "Oprocentowanie roczne (%)",
               "number": 3.5,
-              "precision": 2
+              "precision": 2,
+              "order": 3
             },
             {
               "type": "SLIDER",
@@ -39,17 +41,20 @@ VALUES ('Kalkulator kredytowy',
               "name": "Okres spłaty (lata)",
               "minValue": 1,
               "maxValue": 30,
-              "step": 1
+              "step": 1,
+              "order": 2
             }
           ],
           "outputs": [
             {
               "formula": "ROUND_TO_N(( ${loan_amount} * (${interest_rate} / 1200)) / (1 - (1 + (${interest_rate} / 1200)) ^ (- ${term_years} * 12)), 2)",
-              "precision": 2
+              "precision": 2,
+              "order": 1
             },
             {
               "formula": "ROUND_TO_N(${loan_amount} * (${interest_rate} / 1200) * ${term_years} * 12 - ${loan_amount}, 2)",
-              "precision": 2
+              "precision": 2,
+              "order": 2
             }
           ]
         }$$::jsonb,

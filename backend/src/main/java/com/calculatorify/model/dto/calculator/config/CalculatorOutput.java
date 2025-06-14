@@ -5,6 +5,7 @@ package com.calculatorify.model.dto.calculator.config;
  */
 public record CalculatorOutput(
 		String formula,
-		Integer precision
+		Integer precision,
+		Integer order
 ) {
 }

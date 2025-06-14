@@ -30,6 +30,7 @@ public abstract class CalculatorInput {
 	private @NotNull String type;
 	private @NotNull String id;
 	private @NotNull String name;
+	private @NotNull Integer order;
 
 	@Getter
 	@NoArgsConstructor
@@ -39,8 +40,8 @@ public abstract class CalculatorInput {
 		private @NotNull BigDecimal number;
 		private @NotNull Integer precision;
 
-		public Number(String id, String name, BigDecimal number, Integer precision) {
-			super("NUMBER", id, name);
+		public Number(String id, String name, Integer order, BigDecimal number, Integer precision) {
+			super("NUMBER", id, name, order);
 			this.number = number;
 			this.precision = precision;
 		}
@@ -55,8 +56,8 @@ public abstract class CalculatorInput {
 		private @NotNull BigDecimal maxValue;
 		private @NotNull BigDecimal step;
 
-		public Slider(String id, String name, BigDecimal minValue, BigDecimal maxValue, BigDecimal step) {
-			super("SLIDER", id, name);
+		public Slider(String id, String name, Integer order, BigDecimal minValue, BigDecimal maxValue, BigDecimal step) {
+			super("SLIDER", id, name, order);
 			this.minValue = minValue;
 			this.maxValue = maxValue;
 			this.step = step;
@@ -70,8 +71,8 @@ public abstract class CalculatorInput {
 
 		private @NotNull Map<String, BigDecimal> nameValueOptions;
 
-		public RadioButtons(String id, String name, Map<String, BigDecimal> nameValueOptions) {
-			super("RADIO_BUTTONS", id, name);
+		public RadioButtons(String id, String name, Integer order, Map<String, BigDecimal> nameValueOptions) {
+			super("RADIO_BUTTONS", id, name, order);
 			this.nameValueOptions = nameValueOptions;
 		}
 	}

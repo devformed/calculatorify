@@ -6,6 +6,7 @@ interface SliderInput {
   minValue: number;
   maxValue: number;
   step: number;
+  order: number;
 }
 interface NumberInput {
   type: 'NUMBER';
@@ -13,12 +14,14 @@ interface NumberInput {
   name: string;
   number: number;
   precision: number;
+  order: number;
 }
 interface RadioButtonsInput {
   type: 'RADIO_BUTTONS';
   id: string;
   name: string;
   nameValueOptions: Record<string, number>;
+  order: number;
 }
 type CalculatorInput = SliderInput | NumberInput | RadioButtonsInput;
 interface CalculatorConfig {
@@ -53,8 +56,10 @@ export async function renderDashboardCards(): Promise<void> {
         desc.textContent = description;
         cardEl.append(desc);
       }
-      // Render dynamic inputs
-      config.inputs.forEach((input) => {
+      // Render dynamic inputs (sorted by order)
+      [...config.inputs]
+        .sort((a, b) => a.order - b.order)
+        .forEach((input) => {
         const wrapper = document.createElement("div");
         wrapper.className = "dashboard-card-input";
         if (input.type === "SLIDER") {
