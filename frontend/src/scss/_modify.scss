@@ -51,3 +51,9 @@
   color: $color-text;
   padding-top: 1rem;
 }
+// Range text next to slider label
+.slider-range-text {
+  margin-left: 0.5rem;
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+}

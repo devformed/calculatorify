@@ -82,8 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           wrapper.className = 'dashboard-card-input';
           if (input.type === 'SLIDER') {
             const slider = input as SliderInput;
-            const valueSpan = document.createElement('span');
-            // Random initial position
+            // Slider element
             const min = slider.minValue;
             const max = slider.maxValue;
             const step = slider.step;
@@ -97,14 +96,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             range.max = String(max);
             range.step = String(step);
             range.value = String(initVal);
-            valueSpan.textContent = String(initVal);
+            // Label with static range display
+            const rangeSpan = document.createElement('span');
+            rangeSpan.className = 'slider-range-text';
+            rangeSpan.textContent = `${min} - ${max}`;
             const label = document.createElement('label');
             label.htmlFor = range.id;
             label.textContent = `${slider.name}: `;
-            label.append(valueSpan);
-            range.addEventListener('input', () => {
-              valueSpan.textContent = range.value;
-            });
+            label.append(rangeSpan);
             wrapper.append(label, range);
           } else if (input.type === 'NUMBER') {
             const numIn = input as NumberInput;
