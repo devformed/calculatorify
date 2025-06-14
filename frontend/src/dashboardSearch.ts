@@ -33,8 +33,16 @@ interface RadioButtonsInput {
   order: number;
 }
 type CalculatorInput = SliderInput | NumberInput | RadioButtonsInput;
+// Output type with display name
+interface CalculatorOutput {
+  name: string;
+  formula: string;
+  precision: number;
+  order: number;
+}
 interface CalculatorConfig {
   inputs: CalculatorInput[];
+  outputs: CalculatorOutput[];
 }
 interface CalculatorEntry {
   id: string;
@@ -142,6 +150,27 @@ async function onInputChanged(aiInput: HTMLInputElement) {
             }
             cardEl.append(wrapper);
           });
+          // Outputs section
+          if (config.outputs && config.outputs.length) {
+            const sep = document.createElement('div');
+            sep.className = 'dashboard-card-outcome-label';
+            sep.textContent = 'Outcome';
+            cardEl.append(sep);
+            [...config.outputs]
+              .sort((a, b) => a.order - b.order)
+              .forEach((output) => {
+                const outEl = document.createElement('div');
+                outEl.className = 'dashboard-card-output';
+                const labelEl = document.createElement('span');
+                labelEl.className = 'dashboard-card-output-label';
+                labelEl.textContent = output.name;
+                const valueEl = document.createElement('span');
+                valueEl.className = 'dashboard-card-output-value';
+                valueEl.textContent = 'Hidden';
+                outEl.append(labelEl, valueEl);
+                cardEl.append(outEl);
+              });
+          }
           // Calculate button
           const btn = document.createElement('button');
           btn.className = 'btn btn-primary';

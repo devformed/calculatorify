@@ -47,11 +47,13 @@ VALUES ('Kalkulator kredytowy',
           ],
           "outputs": [
             {
+              "name": "Monthly Payment",
               "formula": "ROUND_TO_N(( ${loan_amount} * (${interest_rate} / 1200)) / (1 - (1 + (${interest_rate} / 1200)) ^ (- ${term_years} * 12)), 2)",
               "precision": 2,
               "order": 1
             },
             {
+              "name": "Total Interest",
               "formula": "ROUND_TO_N(${loan_amount} * (${interest_rate} / 1200) * ${term_years} * 12 - ${loan_amount}, 2)",
               "precision": 2,
               "order": 2
