@@ -4,6 +4,7 @@ import com.calculatorify.controller.SessionManager;
 import com.calculatorify.exception.HttpHandlerException;
 import com.calculatorify.model.dto.http.HttpPathContext;
 import com.calculatorify.model.dto.http.HttpResponse;
+import com.calculatorify.model.dto.user.Role;
 import com.calculatorify.model.dto.user.UserDto;
 import com.calculatorify.model.dto.user.UserEntry;
 import com.calculatorify.model.repository.user.UserRepository;
@@ -15,6 +16,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -37,10 +39,10 @@ public class LoginService {
 			throw new HttpHandlerException(401, "Unauthorized: Invalid username or password");
 		}
 		String sessionId = sessionManager.createSession(user.getId());
-       exchange.getResponseHeaders().add(
-           "Set-Cookie",
-           "SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
-       );
+		exchange.getResponseHeaders().add(
+				"Set-Cookie",
+				"SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
+		);
 		return HttpResponse.ok();
 	}
 
@@ -52,12 +54,12 @@ public class LoginService {
 		String salt = BCrypt.gensalt(BCRYPT_COST_FACTOR);
 		String hash = BCrypt.hashpw(auth.password(), salt);
 
-		UUID userId = userRepository.persist(new UserDto(auth.username(), hash));
+		UUID userId = userRepository.persist(new UserDto(auth.username(), hash, Set.of(Role.USER)));
 		String sessionId = sessionManager.createSession(userId);
-       exchange.getResponseHeaders().add(
-           "Set-Cookie",
-           "SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
-       );
+		exchange.getResponseHeaders().add(
+				"Set-Cookie",
+				"SESSIONID=%s; Path=/; Secure; HttpOnly; SameSite=None".formatted(sessionId)
+		);
 		return HttpResponse.ok(userId);
 	}
 
@@ -66,7 +68,8 @@ public class LoginService {
 		return HttpResponse.ok();
 	}
 
-	private record BasicAuth(String username, String password) { }
+	private record BasicAuth(String username, String password) {
+	}
 
 	public static void main(String[] args) {
 		String salt = BCrypt.gensalt(BCRYPT_COST_FACTOR);

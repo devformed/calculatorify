@@ -17,5 +17,7 @@ public interface UserRepository {
 
 	Optional<UserEntry> findByUsername(String username);
 
+	UserEntry getById(UUID userId);
+
 	Long count();
 }

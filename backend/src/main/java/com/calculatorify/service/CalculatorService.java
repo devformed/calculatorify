@@ -95,10 +95,8 @@ public class CalculatorService {
 	}
 
 	public HttpResponse create(HttpExchange exchange, HttpPathContext context) throws Exception {
-		String sessionId = HttpUtils.getSessionId(exchange)
-				.orElseThrow(() -> new HttpHandlerException(401, "Unauthorized"));
-		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId))
-				.orElseThrow(() -> new HttpHandlerException(401, "Invalid session"));
+		String sessionId = HttpUtils.getSessionId(exchange).orElseThrow();
+		SessionEntry sessionEntry = sessionRepository.findById(UUID.fromString(sessionId)).orElseThrow();
 
 		String body = HttpUtils.getRequestBody(exchange);
 		CalculatorDto dto = Json.fromJson(body, CalculatorDto.class);

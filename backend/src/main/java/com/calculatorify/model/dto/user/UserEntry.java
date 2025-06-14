@@ -12,12 +12,14 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-@Builder
-public class UserEntry {
+public class UserEntry extends UserDto {
+
 	@NotNull
 	private UUID id;
-	@NotNull
-	private String username;
-	@NotNull
-	private String password;
+
+	@Builder
+	public UserEntry(String username, String password, String roles, UUID id) {
+		super(username, password, roles);
+		this.id = id;
+	}
 }
