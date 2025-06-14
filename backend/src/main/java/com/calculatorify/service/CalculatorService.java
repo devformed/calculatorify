@@ -8,6 +8,7 @@ import com.sun.net.httpserver.HttpExchange;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -26,6 +27,7 @@ public class CalculatorService {
 
 	public HttpResponse getCalculator(HttpExchange exchange, HttpPathContext context) {
 		UUID id = UUID.fromString(context.getPathVariable("id"));
-		return HttpResponse.ok();
+		CalculatorEntry entry = repository.findById(id).orElseThrow(() -> new NoSuchElementException("Calculator not found"));
+		return HttpResponse.ok(entry);
 	}
 }

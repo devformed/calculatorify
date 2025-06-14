@@ -171,10 +171,10 @@ export async function renderDashboardCards(): Promise<void> {
             const btn = document.createElement("button");
             btn.className = "btn btn-primary";
             btn.textContent = "Calculate";
-            btn.addEventListener("click", () => {
-                // TODO: implement calculation logic
-                alert(`Calculate ${title}`);
-            });
+      btn.addEventListener("click", () => {
+        // Navigate to modify page for this calculator
+        window.location.href = `modify.html?id=${id}`;
+      });
             cardEl.append(btn);
             container.append(cardEl);
         });
