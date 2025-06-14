@@ -21,6 +21,7 @@ import java.util.Map;
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 @JsonSubTypes({
+		@JsonSubTypes.Type(value = CalculatorInput.Number.class),
 		@JsonSubTypes.Type(value = CalculatorInput.Slider.class),
 		@JsonSubTypes.Type(value = CalculatorInput.RadioButtons.class),
 })
