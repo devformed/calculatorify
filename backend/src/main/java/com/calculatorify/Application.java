@@ -6,6 +6,8 @@ import com.calculatorify.controller.SessionManager;
 import com.calculatorify.model.repository.DataSourceProvider;
 import com.calculatorify.model.repository.DataSourceProviderImpl;
 import com.calculatorify.model.repository.TransactionContext;
+import com.calculatorify.model.repository.calculator.CalculatorRepository;
+import com.calculatorify.model.repository.calculator.CalculatorRepositoryImpl;
 import com.calculatorify.model.repository.user.UserRepository;
 import com.calculatorify.model.repository.user.UserRepositoryImpl;
 import com.calculatorify.model.repository.session.SessionRepository;
@@ -50,10 +52,11 @@ public class Application {
 
 		ServiceRegistry.register(UserRepository.class, new UserRepositoryImpl());
 		ServiceRegistry.register(SessionRepository.class, new SessionRepositoryImpl());
+		ServiceRegistry.register(CalculatorRepository.class, new CalculatorRepositoryImpl());
 		// service
 		ServiceRegistry.register(SessionManager.class, new SessionManager(get(SessionRepository.class)));
 		ServiceRegistry.register(LoginService.class, new LoginService(get(UserRepository.class), get(SessionManager.class)));
-		ServiceRegistry.register(CalculatorService.class, new CalculatorService());
+		ServiceRegistry.register(CalculatorService.class, new CalculatorService(get(CalculatorRepository.class)));
 		// controllers
 		ServiceRegistry.register(LoginController.class, new LoginController(get(SessionManager.class), get(LoginService.class)));
 		ServiceRegistry.register(CalculatorsController.class, new CalculatorsController(get(SessionManager.class), get(CalculatorService.class)));
@@ -65,6 +68,7 @@ public class Application {
 				.dataSource(ds)
 				.locations("classpath:db/migration")
 				.validateMigrationNaming(true)
+				.placeholderReplacement(false)
 				.load()
 				.migrate();
 	}

@@ -18,6 +18,7 @@ public class CalculatorsController extends AbstractController {
     private static ImmutableMap<HttpContextMatcher, HttpRequestHandler> buildHandlers(CalculatorService service) {
         return ImmutableMap.<HttpContextMatcher, HttpRequestHandler>builder()
                 .put(HttpContextMatcher.of(HttpMethod.GET, "/calculators"), service::getCalculators)
+                .put(HttpContextMatcher.of(HttpMethod.GET, "/calculators/{id}"), service::getCalculator)
                 .build();
     }
 }

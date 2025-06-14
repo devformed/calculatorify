@@ -17,6 +17,56 @@ import static com.calculatorify.service.notation.NotationResolverUtils.popDouble
 @RequiredArgsConstructor
 public enum Func {
 
+	SQRT(1) {
+		@Override
+		public void process(Deque<Object> stack) {
+			addNumber(stack, Math.sqrt(popDouble(stack)));
+		}
+	},
+	POW(2) {
+		@Override
+		public void process(Deque<Object> stack) {
+			double exponent = popDouble(stack);
+			double base     = popDouble(stack);
+			addNumber(stack, Math.pow(base, exponent));
+		}
+	},
+	LN(1) {
+		@Override
+		public void process(Deque<Object> stack) {
+			addNumber(stack, Math.log(popDouble(stack)));
+		}
+	},
+	LOG10(1) {
+		@Override
+		public void process(Deque<Object> stack) {
+			addNumber(stack, Math.log10(popDouble(stack)));
+		}
+	},
+	EXP(1) {
+		@Override
+		public void process(Deque<Object> stack) {
+			addNumber(stack, Math.exp(popDouble(stack)));
+		}
+	},
+	SIN(1) {
+		@Override
+		public void process(Deque<Object> stack) {
+			addNumber(stack, Math.sin(popDouble(stack)));
+		}
+	},
+	COS(1) {
+		@Override
+		public void process(Deque<Object> stack) {
+			addNumber(stack, Math.cos(popDouble(stack)));
+		}
+	},
+	TAN(1) {
+		@Override
+		public void process(Deque<Object> stack) {
+			addNumber(stack, Math.tan(popDouble(stack)));
+		}
+	},
 	DECIMAL(1) {
 		@Override
 		public void process(Deque<Object> stack) {

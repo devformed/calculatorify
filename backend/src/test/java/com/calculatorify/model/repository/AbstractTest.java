@@ -29,30 +29,32 @@ public abstract class AbstractTest {
 
 	protected static final UUID TEST_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-   protected static HikariDataSource dataSource;
-   protected static MockedStatic<TransactionContext> txSpy;
+	protected static HikariDataSource dataSource;
+	protected static MockedStatic<TransactionContext> txSpy;
 
-   // Initialize container, database schema, and transaction context once per test class
-   static {
-       CONTAINER_POSTGRES.start();
-       HikariConfig config = new HikariConfig();
-       config.setJdbcUrl(CONTAINER_POSTGRES.getJdbcUrl());
-       config.setUsername(CONTAINER_POSTGRES.getUsername());
-       config.setPassword(CONTAINER_POSTGRES.getPassword());
-       config.setDriverClassName("org.postgresql.Driver");
-       try (HikariDataSource migrationDs = new HikariDataSource(config)) {
-           Flyway.configure()
-                 .dataSource(migrationDs)
-                 .locations("classpath:db/migration")
-                 .load()
-                 .migrate();
-       }
-       dataSource = new HikariDataSource(config);
-       TransactionContext.setDataSource(dataSource);
-       txSpy = mockStatic(TransactionContext.class, CALLS_REAL_METHODS);
-       txSpy.when(() -> TransactionContext.inTransaction(any(Callable.class)))
-            .thenAnswer(args -> args.getArgument(0, Callable.class).call());
-   }
+	// Initialize container, database schema, and transaction context once per test class
+	static {
+		CONTAINER_POSTGRES.start();
+		HikariConfig config = new HikariConfig();
+		config.setJdbcUrl(CONTAINER_POSTGRES.getJdbcUrl());
+		config.setUsername(CONTAINER_POSTGRES.getUsername());
+		config.setPassword(CONTAINER_POSTGRES.getPassword());
+		config.setDriverClassName("org.postgresql.Driver");
+		try (HikariDataSource migrationDs = new HikariDataSource(config)) {
+			Flyway.configure()
+					.dataSource(migrationDs)
+					.locations("classpath:db/migration")
+					.validateMigrationNaming(true)
+					.placeholderReplacement(false)
+					.load()
+					.migrate();
+		}
+		dataSource = new HikariDataSource(config);
+		TransactionContext.setDataSource(dataSource);
+		txSpy = mockStatic(TransactionContext.class, CALLS_REAL_METHODS);
+		txSpy.when(() -> TransactionContext.inTransaction(any(Callable.class)))
+				.thenAnswer(args -> args.getArgument(0, Callable.class).call());
+	}
 
 
 	@BeforeEach
