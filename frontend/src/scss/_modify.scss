@@ -16,6 +16,12 @@
   background-color: transparent;
 }
 
+// Make modify-content fill available width instead of centering
+.modify-content {
+  align-self: stretch;
+  width: 100%;
+}
+
 // Two-column panels inside modify-card
 .modify-panels {
   display: flex;
