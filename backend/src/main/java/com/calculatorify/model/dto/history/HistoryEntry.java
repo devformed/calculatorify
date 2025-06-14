@@ -1,7 +1,6 @@
 package com.calculatorify.model.dto.history;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,15 +10,14 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-public class HistoryEntry {
+public class HistoryEntry extends HistoryDto {
+
 	@NotNull
 	private UUID id;
-	@NotNull
-	private UUID userId;
-	@NotNull
-	private UUID calculatorId;
-	@NotNull
-	private Instant accessedAt;
+
+	@Builder
+	public HistoryEntry(UUID userId, UUID calculatorId, String calculatorTitle, Instant accessedAt, UUID id) {
+		super(userId, calculatorId, calculatorTitle, accessedAt);
+		this.id = id;
+	}
 }

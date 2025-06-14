@@ -11,13 +11,19 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
+@Builder(builderMethodName = "dtoBuilder")
 public class HistoryDto {
+
 	@NotNull
 	private UUID userId;
+
 	@NotNull
 	private UUID calculatorId;
+
+	@NotNull
+	private String calculatorTitle;
+
 	@NotNull
 	private Instant accessedAt;
 }
