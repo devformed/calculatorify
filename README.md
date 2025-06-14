@@ -55,12 +55,14 @@ Calculatorify consists of three main components:
    This will start PostgreSQL on port `5433`, the AI backend on `8000`, and the Java backend on `8080`.
 
 3. **Run frontend**
+
+   The frontend can now be run via Docker Compose, without requiring Node.js or npm locally:
+
    ```bash
-   cd frontend
-   npm install
-   npm run dev
+   docker-compose -f docker-compose-local.yaml up --build frontend
    ```
-   Live Server will serve the `public` directory on an available port (e.g. `8081`). Open `<PORT>/dashboard.html` in your browser.
+
+   This will build the frontend image, install dependencies, and start the development server on `http://localhost:3000`. Open `http://localhost:3000/dashboard.html` in your browser.
 
 4. **Use the app**
    - Register and log in

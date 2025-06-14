@@ -46,3 +46,14 @@ services:
       - ./backend:/opt/calculatorify
       # optional mount for local Maven repository to achieve faster builds
       - ${HOME}/.m2:/root/.m2
+  
+  frontend:
+    container_name: calculatorify-local-frontend
+    build:
+      context: ./frontend
+    ports:
+      - "3000:8080"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
