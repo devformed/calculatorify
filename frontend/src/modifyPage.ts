@@ -11,7 +11,11 @@ interface Token {
 // Evaluate postfix token list with variable map
 function evaluatePostfix(tokens: Token[], variableMap: Record<string, string>): number {
     const stack: number[] = [];
-    tokens.forEach(token => {
+    console.log(`Postfix tokens: ${JSON.stringify(tokens)}`);
+    tokens.forEach((token, idx) => {
+        console.log(
+            `Token ${idx}: ${token.type}:${token.value} | Stack before: ${JSON.stringify(stack)}`
+        );
         switch (token.type) {
             case 'DECIMAL_LITERAL':
                 stack.push(parseFloat(token.value));
@@ -42,6 +46,9 @@ function evaluatePostfix(tokens: Token[], variableMap: Record<string, string>): 
                         break;
                     case '/':
                         res = a / b;
+                        break;
+                    case '^':
+                        res = Math.pow(a, b);
                         break;
                     default:
                         throw new Error('Unsupported operator ' + token.value);
@@ -160,7 +167,11 @@ function evaluatePostfix(tokens: Token[], variableMap: Record<string, string>): 
             default:
                 throw new Error('Unsupported token type ' + token.type);
         }
+        console.log(
+            `Token ${idx} processed | Stack after: ${JSON.stringify(stack)}`
+        );
     });
+    console.log(`Final stack: ${JSON.stringify(stack)}`);
     if (stack.length !== 1) throw new Error('Invalid expression');
     return stack[0];
 }

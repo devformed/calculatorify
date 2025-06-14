@@ -18,6 +18,6 @@ public record HttpResponse(int statusCode, Object content, String contentType) {
 	}
 
 	public static <T> HttpResponse text(int status, T response) {
-		return new HttpResponse(status, response, HttpConstants.CONTENT_TYPE_PLAIN_TEXT);
+		return new HttpResponse(status, response, HttpConstants.CONTENT_TYPE_TEXT_PLAIN);
 	}
 }

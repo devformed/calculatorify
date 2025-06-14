@@ -12,5 +12,5 @@ public final class HttpConstants {
 	public static final String COOKIE_SESSION_ID = "SESSIONID";
 
 	public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
-	public static final String CONTENT_TYPE_PLAIN_TEXT = "plain/text";
+	public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
 }

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import static com.calculatorify.util.Collects.mapList;
+
 /**
  * @author Anton Gorokh
  */
@@ -42,6 +44,7 @@ public final class ShuntingYardConverter {
 				default -> valence += 1;
 			}
 			if (valence <= 0) {
+				System.out.println(token.value() + " " + mapList(output, Token::value));
 				throw new IllegalExpressionException(NotationErrors.VALENCE_REACHED_ZERO);
 			}
 		}

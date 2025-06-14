@@ -15,7 +15,7 @@ public enum TokenType {
 	BOOLEAN_LITERAL("(true|false)"),
 
 	VARIABLE("\\$\\{(.+?)\\}"),
-	OPERATOR("[+\\-*/]"),
+	OPERATOR("[+\\-*/^%]"),
 	LEFT_PAREN("\\("),
 	RIGHT_PAREN("\\)"),
 	FUNCTION(toRegExp(Func.values())),
